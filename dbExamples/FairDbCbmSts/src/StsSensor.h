@@ -42,10 +42,12 @@ class StsSensor : public FairDbRelationalParSet<StsSensor>
     virtual void Store(FairDbOutTableBuffer& res_out,
                        const FairDbValRecord* valrec) const;
 
+#ifndef __CINT__
     const StsSensorBatch* GetBatch();
 
     static TObjArray* GetByBatchId(Int_t BatchId, UInt_t rid=0);
     static TObjArray* GetBySUID(string SUID, UInt_t rid=0);
+#endif
 
     Int_t GetBatchId() const { return fBatchId; }
     string GetSUID() const { return fSUID; }

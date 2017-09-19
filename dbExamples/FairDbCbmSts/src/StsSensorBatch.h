@@ -42,9 +42,11 @@ class StsSensorBatch : public FairDbRelationalParSet<StsSensorBatch>
     virtual void Store(FairDbOutTableBuffer& res_out,
                        const FairDbValRecord* valrec) const;
 
+#ifndef __CINT__
     const TObjArray* GetSensors();
 
     static TObjArray* GetByNumber(string Number, UInt_t rid=0);
+#endif
 
     string GetNumber() const { return fNumber; }
     ValTimeStamp GetDate() const { return fDate; }
