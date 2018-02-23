@@ -27,7 +27,7 @@ void FairDbWtUserResource::Login(const Wt::Http::Request& request, Json::Value r
   std::string email = requestData.get("email", "").asString();
   std::string password = requestData.get("password", "").asString();
 
-  FairDbUser* user = FairDbWtUserSessionStore::Instance()->Login(email, password);
+  std::unique_ptr<FairDbUser> user = FairDbWtUserSessionStore::Instance()->Login(email, password);
 
   if (user) {
     responseData["data"]["auth-token"] = user->GetToken();
@@ -56,7 +56,7 @@ void FairDbWtUserResource::Register(const Wt::Http::Request& request, Json::Valu
     return;
   }
 
-  FairDbUser *user = FairDbUser::FromJson(user);
+  std::unique_ptr<FairDbUser> user = FairDbUser::FromJson(userJson);
 
   Wt::Auth::PasswordVerifier *verifier = new Wt::Auth::PasswordVerifier();
   Wt::Auth::BCryptHashFunction *bcrypt = new Wt::Auth::BCryptHashFunction(7);
@@ -76,7 +76,7 @@ void FairDbWtUserResource::GetById(const Wt::Http::Request& request, Json::Value
 {
   Int_t id = requestData.get("Id", -1).asInt();
   UInt_t rid = requestData.get("Rid", (UInt_t)ValTimeStamp()).asUInt();
-  FairDbUser *user = FairDbUser::GetById(id, rid);
+  std::unique_ptr<FairDbUser> user = FairDbUser::GetById(id, rid);
 
   if (user)
   {
@@ -84,13 +84,12 @@ void FairDbWtUserResource::GetById(const Wt::Http::Request& request, Json::Value
   } else {
     responseData["error"] = "Not found";
   }
-  delete user;
 }
 
 void FairDbWtUserResource::Get(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData)
 {
   std::string authToken = request.headerValue("auth-token");
-  FairDbUser *user = FairDbWtUserSessionStore::Instance()->GetUser(authToken);
+  std::unique_ptr<FairDbUser> user = FairDbWtUserSessionStore::Instance()->GetUser(authToken);
 
   if (user)
   {
@@ -98,14 +97,12 @@ void FairDbWtUserResource::Get(const Wt::Http::Request& request, Json::Value req
   } else {
     responseData["error"] = "Not found";
   }
-  delete user;
 }
 
 void FairDbWtUserResource::GetAll(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData)
 {
   UInt_t rid = requestData.get("Rid", (UInt_t)ValTimeStamp()).asUInt();
-  TObjArray *array = FairDbUser::GetAll(rid);
+  std::vector<FairDbUser> array = FairDbUser::GetAll(rid);
   Json::Value jsonArray = FairDbUser::ToJsonArray(array);
   responseData["data"] = jsonArray;
-  delete array;
 }

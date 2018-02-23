@@ -32,13 +32,13 @@ FairDbWtUserSessionStore::~FairDbWtUserSessionStore()
 
 std::string FairDbWtUserSessionStore::GetToken(std::string email, std::string password)
 {
-  TObjArray *users = FairDbUser::GetByEmail(email, ValTimeStamp());
-  if (!users) {
+  std::vector<FairDbUser> users = FairDbUser::GetByEmail(email, ValTimeStamp());
+  if (!users.size()) {
     return std::string();
   }
 
-  FairDbUser *user = (FairDbUser *) users->First();
-  if (user->GetStatus() != FairDbUserStatus::kActive) {
+  FairDbUser user = users.front();
+  if (user.GetStatus() != FairDbUserStatus::kActive) {
     return std::string();
   }
 
@@ -46,7 +46,7 @@ std::string FairDbWtUserSessionStore::GetToken(std::string email, std::string pa
   Wt::Auth::BCryptHashFunction *bcrypt = new Wt::Auth::BCryptHashFunction(7);
   verifier->addHashFunction(bcrypt);
 
-  Wt::Auth::PasswordHash hash(bcrypt->name(), user->GetPasswordSalt(), user->GetPasswordHash());
+  Wt::Auth::PasswordHash hash(bcrypt->name(), user.GetPasswordSalt(), user.GetPasswordHash());
   bool result = verifier->verify(password, hash);
 
   if (!result) {
@@ -56,19 +56,18 @@ std::string FairDbWtUserSessionStore::GetToken(std::string email, std::string pa
   std::string token(verifier->hashPassword("").value());
   fSessionAuth[token] = user;
 
-  delete users;
   return token;
 }
 
-FairDbUser* FairDbWtUserSessionStore::Login(std::string email, std::string password)
+std::unique_ptr<FairDbUser> FairDbWtUserSessionStore::Login(std::string email, std::string password)
 {
-  TObjArray *users = FairDbUser::GetByEmail(email, ValTimeStamp());
-  if (!users) {
+  std::vector<FairDbUser> users = FairDbUser::GetByEmail(email, ValTimeStamp());
+  if (!users.size()) {
     return nullptr;
   }
 
-  FairDbUser *user = (FairDbUser *) users->First();
-  if (user->GetStatus() != FairDbUserStatus::kActive) {
+  FairDbUser user = users.front();
+  if (user.GetStatus() != FairDbUserStatus::kActive) {
     return nullptr;
   }
 
@@ -76,7 +75,7 @@ FairDbUser* FairDbWtUserSessionStore::Login(std::string email, std::string passw
   Wt::Auth::BCryptHashFunction *bcrypt = new Wt::Auth::BCryptHashFunction(7);
   verifier->addHashFunction(bcrypt);
 
-  Wt::Auth::PasswordHash hash(bcrypt->name(), user->GetPasswordSalt(), user->GetPasswordHash());
+  Wt::Auth::PasswordHash hash(bcrypt->name(), user.GetPasswordSalt(), user.GetPasswordHash());
   bool result = verifier->verify(password, hash);
 
   if (!result) {
@@ -84,33 +83,28 @@ FairDbUser* FairDbWtUserSessionStore::Login(std::string email, std::string passw
   }
 
   std::string token(verifier->hashPassword("").value());
-  user->SetToken(token);
+  user.SetToken(token);
   fSessionAuth[token] = user;
 
-  delete users;
-  FairDbUser *copy = new FairDbUser();
-  *copy = *user;
-  return copy;
+  return std::unique_ptr<FairDbUser>(new FairDbUser(user));
 }
 
-FairDbUser* FairDbWtUserSessionStore::GetUser(std::string token)
+std::unique_ptr<FairDbUser> FairDbWtUserSessionStore::GetUser(std::string token)
 {
   if (fSessionAuth.find(token) == fSessionAuth.end()) {
     return nullptr;
   }
 
-  FairDbUser *user = fSessionAuth[token];
-  FairDbUser *copy = new FairDbUser();
-  *copy = *user;
-  return copy;
+  FairDbUser user = fSessionAuth[token];
+  return std::unique_ptr<FairDbUser>(new FairDbUser(user));
 }
 
 bool FairDbWtUserSessionStore::VerifyToken(std::string token)
 {
-  return fSessionAuth.find(token) != fSessionAuth.end() && fSessionAuth[token] != nullptr;
+  return fSessionAuth.find(token) != fSessionAuth.end() && fSessionAuth[token].GetToken() == token;
 }
 
 bool FairDbWtUserSessionStore::CheckUserRole(std::string token, FairDbUserRole::UserRole_t role)
 {
-  return VerifyToken(token) && fSessionAuth[token]->GetRole() >= role;
+  return VerifyToken(token) && fSessionAuth[token].GetRole() >= role;
 }

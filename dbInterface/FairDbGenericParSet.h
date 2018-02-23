@@ -35,7 +35,12 @@
 #include <memory>   
 #include <vector>   
 
-
+/// TODO: find better place for this helper
+template< class T >
+std::unique_ptr<T> copy_unique(const std::unique_ptr<T>& source)
+{
+  return source ? std::unique_ptr<T>(new T(*source)) : nullptr;
+}
 
 template <typename T>
 class FairDbGenericParSet : public FairDbParSet
@@ -62,13 +67,13 @@ class FairDbGenericParSet : public FairDbParSet
     virtual void clear();
     virtual void fill(UInt_t rid=0);
 #ifndef __CINT__
-    static TObjArray* GetBy(std::function<bool(T*)> condition, UInt_t rid=0);
+    static std::vector<T> GetBy(std::function<bool(const T&)> condition, UInt_t rid=0);
 #endif
-    static T* GetByIndex(Int_t index, UInt_t rid=0);
-    static TObjArray* GetAll(UInt_t rid=0);
-    TObjArray* GetAllVersions();
+    static unique_ptr<T> GetByIndex(Int_t index, UInt_t rid=0);
+    static std::vector<T> GetAll(UInt_t rid=0);
+    std::vector<T> GetAllVersions();
     virtual void store(UInt_t rid=0);
-    static void StoreArray(TObjArray *array, UInt_t rid=0, std::string = "");
+    static void StoreArray(std::vector<T>, UInt_t rid=0, std::string = "");
 
     // Standard Validity frame definition
     virtual ValCondition GetContext(UInt_t rid) {

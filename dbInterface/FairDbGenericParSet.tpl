@@ -58,6 +58,10 @@ FairDbGenericParSet<T>::FairDbGenericParSet(const FairDbGenericParSet& from)
   fData_id = from.fData_id;
   fTableName = from.fTableName;
   fCompId = from.fCompId;
+
+  fParam_Writer = NULL;
+  fParam_Reader = NULL;
+  fMultConn = FairDbTableInterfaceStore::Instance().fConnectionPool;
 }
 
 template<typename T>
@@ -71,9 +75,12 @@ FairDbGenericParSet<T>& FairDbGenericParSet<T>::operator=(const FairDbGenericPar
   fTableName = from.fTableName;
   fCompId = from.fCompId;
 
-  return *this; 
-}  
+  fParam_Writer = NULL;
+  fParam_Reader = NULL;
+  fMultConn = FairDbTableInterfaceStore::Instance().fConnectionPool;
 
+  return *this;
+}
 
 template<typename T>
 FairDbGenericParSet<T>::~FairDbGenericParSet()
@@ -174,44 +181,35 @@ void FairDbGenericParSet<T>::fill(UInt_t rid)
 }
 
 template<typename T>
-TObjArray* FairDbGenericParSet<T>::GetBy(std::function<bool(T*)> condition, UInt_t rid)
+std::vector<T> FairDbGenericParSet<T>::GetBy(std::function<bool(const T&)> condition, UInt_t rid)
 {
   T instance;
   FairDbReader<T> paramReader;
-  
+
   paramReader.Activate(instance.GetContext(rid), instance.GetVersion());
   Int_t numRows = paramReader.GetNumRows();
   if (!numRows)
-    return NULL;
+    return {};
 
-  TObjArray* result = new TObjArray(numRows);
+  std::vector<T> result;
+  result.reserve(numRows);
   for (Int_t i=0; i < numRows; i++)
   {
-    T *inst = (T*)paramReader.GetRow(i);
-    if (!inst)
+    T *row = (T*)paramReader.GetRow(i);
+    if (!row)
       continue;
 
-    T* copy = new T();
-    *copy = *inst;
-    if (condition(copy))
+    if (condition(*row))
     {
-      result->Add(copy);
-    } else {
-      delete copy;
+      result.emplace_back(*row);
     }
   }
 
-  if (result->GetEntries()) {
-    result->Compress();
-    return result;
-  } else {
-    delete result;
-    return NULL;
-  }
+  return result;
 }
 
 template<typename T>
-T* FairDbGenericParSet<T>::GetByIndex(Int_t index, UInt_t rid)
+std::unique_ptr<T> FairDbGenericParSet<T>::GetByIndex(Int_t index, UInt_t rid)
 {
   T instance;
   FairDbReader<T> paramReader;
@@ -220,22 +218,20 @@ T* FairDbGenericParSet<T>::GetByIndex(Int_t index, UInt_t rid)
   T* row = (T*) paramReader.GetRowByIndex(index);
   if (!row)
   {
-    return NULL;
+    return nullptr;
   }
 
-  T* copy = new T();
-  *copy = *row;
-  return copy;
+  return std::unique_ptr<T>(new T(*row));
 }
 
 template<typename T>
-TObjArray* FairDbGenericParSet<T>::GetAll(UInt_t rid)
+std::vector<T> FairDbGenericParSet<T>::GetAll(UInt_t rid)
 {
-  return FairDbGenericParSet<T>::GetBy([](T *inst) -> bool { return true; }, rid);
+  return FairDbGenericParSet<T>::GetBy([](const T& inst) -> bool { return true; }, rid);
 }
 
 template<typename T>
-TObjArray* FairDbGenericParSet<T>::GetAllVersions()
+std::vector<T> FairDbGenericParSet<T>::GetAllVersions()
 {
   auto_ptr<FairDbStatement> stmtDbn(fMultConn->CreateStatement(GetDbEntry()));
   if ( ! stmtDbn.get() ) {
@@ -253,12 +249,12 @@ TObjArray* FairDbGenericParSet<T>::GetAllVersions()
 
   TSQLStatement* stmtTSQL = stmtDbn->ExecuteQuery(oss.str());
 
-  TObjArray *result = new TObjArray();
-  while ( stmtTSQL->NextResultRow() ) {
-    T* instance = GetByIndex(GetCompId(), FairDb::MakeTimeStamp(stmtTSQL->GetString(1)));
-    if (instance)
+  std::vector<T> result;
+  while ( stmtTSQL && stmtTSQL->NextResultRow() ) {
+    std::unique_ptr<T> row = GetByIndex(GetCompId(), FairDb::MakeTimeStamp(stmtTSQL->GetString(1)));
+    if (row)
     {
-      result->Add(instance);
+      result.emplace_back(*row);
     }
   }
 
@@ -330,26 +326,20 @@ void FairDbGenericParSet<T>::store(UInt_t rid)
 }
 
 template <typename T>
-void FairDbGenericParSet<T>::StoreArray(TObjArray *array, UInt_t rid, std::string logTitle)
+void FairDbGenericParSet<T>::StoreArray(std::vector<T> array, UInt_t rid, std::string logTitle)
 {
-  if (!array)
-    return;
+  UInt_t numRows = array.size();
 
-  Int_t numRows = array->GetEntries();
   if (!numRows)
     return;
 
-  for (Int_t i=0; i<numRows; i++)
+  for (T& instance : array)
   {
-    T* parSet = (T*) array->At(i);
-    if (!parSet)
-      continue;
-
     if (!logTitle.empty())
     {
-      parSet->SetLogTitle(logTitle);
+      instance.SetLogTitle(logTitle);
     }
-    parSet->store(rid);
+    instance.store(rid);
   }
 }
 

@@ -92,7 +92,7 @@ void FairDbWtAuthResource::Login(const Wt::Http::Request& request, Json::Value r
   std::string email = requestData.get("email", "").asString();
   std::string password = requestData.get("password", "").asString();
 
-  FairDbUser* user = FairDbWtUserSessionStore::Instance()->Login(email, password);
+  std::unique_ptr<FairDbUser> user = FairDbWtUserSessionStore::Instance()->Login(email, password);
 
   if (user) {
     responseData["data"]["auth-token"] = user->GetToken();

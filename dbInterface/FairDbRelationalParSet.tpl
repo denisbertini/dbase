@@ -31,7 +31,7 @@ template<typename T>
 FairDbRelationalParSet<T>::FairDbRelationalParSet(const FairDbRelationalParSet& from)
   : FairDbGenericParSet<T>(from)
 {
-  fId = from.fId;
+  SetId(from.fId);
 }
 
 template<typename T>
@@ -40,7 +40,7 @@ FairDbRelationalParSet<T>& FairDbRelationalParSet<T>::operator=(const FairDbRela
   if (this == &from) { return *this; }
 
   FairDbGenericParSet<T>::operator=(from);
-  SetId(from.GetId());
+  SetId(from.fId);
 
   return *this;
 }
@@ -77,7 +77,7 @@ Int_t FairDbRelationalParSet<T>::AllocateNextId()
   FairDbString sql;
 
   // needs to be uppercase
-  string tableName = this->GetTableName();
+  std::string tableName = this->GetTableName();
 
   bool tableExists = this->fMultConn->TableExists(tableName, this->fDbEntry);
   if ( ! tableExists ) { return 0; }
@@ -110,23 +110,20 @@ Int_t FairDbRelationalParSet<T>::AllocateNextId()
 }
 
 template<typename T>
-T* FairDbRelationalParSet<T>::GetById(Int_t id, UInt_t rid)
+std::unique_ptr<T> FairDbRelationalParSet<T>::GetById(Int_t id, UInt_t rid)
 {
   return T::GetByIndex(id, rid);
 }
 
 template<typename T>
-TObjArray* FairDbRelationalParSet<T>::GetByIds(Int_t* ids, UInt_t count, UInt_t rid)
+std::vector<T> FairDbRelationalParSet<T>::GetByIds(std::vector<Int_t> ids, UInt_t rid)
 {
-  if (!ids)
-    return NULL;
-
   return T::GetBy(
-    [&ids, &count](T *inst) -> bool
+    [&ids](const T& inst) -> bool
       {
-        for (Int_t i=0; i < count; i++)
+        for (Int_t id : ids)
         {
-          if (ids[i] == inst->GetId())
+          if (id == inst.GetId())
           {
             return true;
           }
@@ -136,28 +133,10 @@ TObjArray* FairDbRelationalParSet<T>::GetByIds(Int_t* ids, UInt_t count, UInt_t 
 }
 
 template<typename T>
-TObjArray* FairDbRelationalParSet<T>::GetByIds(std::vector<Int_t> ids, UInt_t rid)
-{
-  Int_t count = ids.size();
-  return T::GetBy(
-    [&ids, &count](T *inst) -> bool
-      {
-        for (Int_t i=0; i < count; i++)
-        {
-          if (ids[i] == inst->GetId())
-          {
-            return true;
-          }
-        }
-        return false;
-      });
-}
-
-template<typename T>
-T* FairDbRelationalParSet<T>::FromJsonString(string jsonString)
+std::unique_ptr<T> FairDbRelationalParSet<T>::FromJsonString(std::string jsonString)
 {
   Json::Value json;
-  string error;
+  std::string error;
   Json::CharReaderBuilder readerBuilder;
   Json::CharReader *reader = readerBuilder.newCharReader();
   Bool_t result = reader->parse(jsonString.data(), jsonString.data() + jsonString.size(), &json, &error);
@@ -165,7 +144,7 @@ T* FairDbRelationalParSet<T>::FromJsonString(string jsonString)
   {
     cout << "FairDbRelationalParSet<T>::FromJsonString" << endl;
     cout << error << endl;
-    return NULL;
+    return nullptr;
   }
   delete reader;
 
@@ -173,35 +152,35 @@ T* FairDbRelationalParSet<T>::FromJsonString(string jsonString)
 }
 
 template<typename T>
-T* FairDbRelationalParSet<T>::FromJson(Json::Value json)
+std::unique_ptr<T> FairDbRelationalParSet<T>::FromJson(Json::Value json)
 {
   if (!json.isObject())
   {
-    return NULL;
+    return nullptr;
   }
 
-  T* instance = new T();
-  instance->FillFromJson(json);
-  return instance;
+  T instance;
+  instance.FillFromJson(json);
+  return std::unique_ptr<T>(new T(instance));
 }
 
 template<typename T>
-TObjArray* FairDbRelationalParSet<T>::FromJsonArray(Json::Value jsonArray)
+std::vector<T> FairDbRelationalParSet<T>::FromJsonArray(Json::Value jsonArray)
 {
   if (!jsonArray.isArray())
   {
-    return NULL;
+    return {};
   }
 
-  TObjArray *result = NULL;
-  Int_t count = jsonArray.size();
+  std::vector<T> result;
+  result.reserve(jsonArray.size());
 
-  if (count)
+  for (const Json::Value& element : jsonArray)
   {
-    result = new TObjArray(count);
-    for (Int_t i = 0; i < count; i++)
+    std::unique_ptr<T> deserialized(std::move(FromJson(element)));
+    if (deserialized)
     {
-      result->Add(FromJson(jsonArray[i]));
+      result.emplace_back(*deserialized);
     }
   }
 
@@ -209,7 +188,7 @@ TObjArray* FairDbRelationalParSet<T>::FromJsonArray(Json::Value jsonArray)
 }
 
 template<typename T>
-string FairDbRelationalParSet<T>::ToJsonString()
+std::string FairDbRelationalParSet<T>::ToJsonString()
 {
   ostringstream stream;
   Json::StreamWriterBuilder writerBuilder;
@@ -231,17 +210,15 @@ Json::Value FairDbRelationalParSet<T>::ToJson()
 }
 
 template<typename T>
-Json::Value FairDbRelationalParSet<T>::ToJsonArray(TObjArray* array)
+Json::Value FairDbRelationalParSet<T>::ToJsonArray(std::vector<T> array)
 {
   Json::Value jsonArray(Json::arrayValue);
-  if (array)
+
+  Int_t count = array.size();
+  jsonArray.resize(count);
+  for (Int_t i = 0; i < count; i++)
   {
-    Int_t count = array->GetEntries();
-    jsonArray.resize(count);
-    for (Int_t i = 0; i < count; i++)
-    {
-      jsonArray[i] = ((T*) array->At(i))->ToJson();
-    }
+    jsonArray[i] = array[i].ToJson();
   }
 
   return jsonArray;

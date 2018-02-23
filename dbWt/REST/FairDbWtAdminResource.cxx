@@ -39,7 +39,7 @@ void FairDbWtAdminResource::RegisterUser(const Wt::Http::Request& request, Json:
     return;
   }
 
-  FairDbUser *user = FairDbUser::FromJson(userJson);
+  std::unique_ptr<FairDbUser> user = FairDbUser::FromJson(userJson);
   user->SetId(-1);
 
   Wt::Auth::PasswordVerifier *verifier = new Wt::Auth::PasswordVerifier();
@@ -53,7 +53,6 @@ void FairDbWtAdminResource::RegisterUser(const Wt::Http::Request& request, Json:
   FairDbUser::PurgeCache();
 
   responseData["data"]["Id"] = user->GetId();
-  delete user;
 }
 
 void FairDbWtAdminResource::ChangeUserPassword(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData)
@@ -74,7 +73,7 @@ void FairDbWtAdminResource::ChangeUserPassword(const Wt::Http::Request& request,
     return;
   }
 
-  FairDbUser *user = FairDbUser::GetById(userId, ValTimeStamp());
+  std::unique_ptr<FairDbUser> user = FairDbUser::GetById(userId, ValTimeStamp());
 
   Wt::Auth::PasswordVerifier *verifier = new Wt::Auth::PasswordVerifier();
   Wt::Auth::BCryptHashFunction *bcrypt = new Wt::Auth::BCryptHashFunction(7);
@@ -85,8 +84,6 @@ void FairDbWtAdminResource::ChangeUserPassword(const Wt::Http::Request& request,
   user->SetPasswordSalt(hash.salt());
   user->store(ValTimeStamp());
   FairDbUser::PurgeCache();
-
-  delete user;
 }
 
 void FairDbWtAdminResource::ChangeUser(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData)
@@ -99,11 +96,10 @@ void FairDbWtAdminResource::ChangeUser(const Wt::Http::Request& request, Json::V
     return;
   }
 
-  FairDbUser *modifiedUser = FairDbUser::FromJson(userJson);
-  FairDbUser *user = FairDbUser::GetById(modifiedUser->GetId(), ValTimeStamp());
+  std::unique_ptr<FairDbUser> modifiedUser = FairDbUser::FromJson(userJson);
+  std::unique_ptr<FairDbUser> user = FairDbUser::GetById(modifiedUser->GetId(), ValTimeStamp());
   if (!user)
   {
-    delete modifiedUser;
     responseData["error"] = "User not found";
     response.setStatus(400);
     return;
@@ -118,27 +114,22 @@ void FairDbWtAdminResource::ChangeUser(const Wt::Http::Request& request, Json::V
 
   user->store(ValTimeStamp());
   FairDbUser::PurgeCache();
-
-  delete modifiedUser;
-  delete user;
-
   // remove all user sessions maybe?
 }
 
 void FairDbWtAdminResource::GetAllUsers(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData)
 {
   UInt_t rid = requestData.get("Rid", (UInt_t)ValTimeStamp()).asUInt();
-  TObjArray *array = FairDbUser::GetAll(rid);
+  std::vector<FairDbUser> array = FairDbUser::GetAll(rid);
   Json::Value jsonArray = FairDbUser::ToJsonArray(array);
   responseData["data"] = jsonArray;
-  delete array;
 }
 
 void FairDbWtAdminResource::GetUser(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData)
 {
   Int_t id = requestData.get("Id", -1).asInt();
   UInt_t rid = requestData.get("Rid", (UInt_t)ValTimeStamp()).asUInt();
-  FairDbUser *user = FairDbUser::GetById(id, rid);
+  std::unique_ptr<FairDbUser> user = FairDbUser::GetById(id, rid);
 
   if (user)
   {
@@ -146,5 +137,4 @@ void FairDbWtAdminResource::GetUser(const Wt::Http::Request& request, Json::Valu
   } else {
     responseData["error"] = "Not found";
   }
-  delete user;
 }

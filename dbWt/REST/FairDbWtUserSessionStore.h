@@ -15,8 +15,8 @@ class FairDbWtUserSessionStore
     static FairDbWtUserSessionStore* Instance();
 
     std::string GetToken(std::string email, std::string password);
-    FairDbUser* Login(std::string email, std::string password);
-    FairDbUser* GetUser(std::string token);
+    std::unique_ptr<FairDbUser> Login(std::string email, std::string password);
+    std::unique_ptr<FairDbUser> GetUser(std::string token);
     bool VerifyToken(std::string token);
     bool CheckUserRole(std::string token, FairDbUserRole::UserRole_t role);
 
@@ -24,7 +24,7 @@ class FairDbWtUserSessionStore
     FairDbWtUserSessionStore();
     virtual ~FairDbWtUserSessionStore();
 
-    std::map<std::string, FairDbUser*> fSessionAuth;
+    std::map<std::string, FairDbUser> fSessionAuth;
     static FairDbWtUserSessionStore* fInstance;
 };
 

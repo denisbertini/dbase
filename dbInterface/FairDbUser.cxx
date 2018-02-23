@@ -146,49 +146,48 @@ void FairDbUser::Store(FairDbOutTableBuffer& res_out,
   res_out << fRole;
 }
 
-
-TObjArray* FairDbUser::GetByFullName(string FullName, UInt_t rid)
+std::vector<FairDbUser> FairDbUser::GetByFullName(string FullName, UInt_t rid)
 {
   return FairDbUser::GetBy(
-    [&FullName](FairDbUser *inst) -> bool
+    [&FullName](const FairDbUser& inst) -> bool
       {
-        return FullName == inst->GetFullName();
+        return FullName == inst.GetFullName();
       }, rid);
 }
 
-TObjArray* FairDbUser::GetByEmail(string Email, UInt_t rid)
+std::vector<FairDbUser> FairDbUser::GetByEmail(string Email, UInt_t rid)
 {
   return FairDbUser::GetBy(
-    [&Email](FairDbUser *inst) -> bool
+    [&Email](const FairDbUser& inst) -> bool
       {
-        return Email == inst->GetEmail();
+        return Email == inst.GetEmail();
       }, rid);
 }
 
-TObjArray* FairDbUser::GetByAddress(string Address, UInt_t rid)
+std::vector<FairDbUser> FairDbUser::GetByAddress(string Address, UInt_t rid)
 {
   return FairDbUser::GetBy(
-    [&Address](FairDbUser *inst) -> bool
+    [&Address](const FairDbUser& inst) -> bool
       {
-        return Address == inst->GetAddress();
+        return Address == inst.GetAddress();
       }, rid);
 }
 
-TObjArray* FairDbUser::GetByStatus(Int_t Status, UInt_t rid)
+std::vector<FairDbUser> FairDbUser::GetByStatus(Int_t Status, UInt_t rid)
 {
   return FairDbUser::GetBy(
-    [&Status](FairDbUser *inst) -> bool
+    [&Status](const FairDbUser& inst) -> bool
       {
-        return Status == inst->GetStatus();
+        return Status == inst.GetStatus();
       }, rid);
 }
 
-TObjArray* FairDbUser::GetByRole(Int_t Role, UInt_t rid)
+std::vector<FairDbUser> FairDbUser::GetByRole(Int_t Role, UInt_t rid)
 {
   return FairDbUser::GetBy(
-    [&Role](FairDbUser *inst) -> bool
+    [&Role](const FairDbUser& inst) -> bool
       {
-        return Role == inst->GetRole();
+        return Role == inst.GetRole();
       }, rid);
 }
 
@@ -200,7 +199,6 @@ void FairDbUser::FillFromJson(Json::Value json)
   SetAddress(json["Address"].asString());
   SetStatus(json["Status"].asInt());
   SetRole(json["Role"].asInt());
-
 }
 
 void FairDbUser::StoreToJson(Json::Value& json)
@@ -211,7 +209,4 @@ void FairDbUser::StoreToJson(Json::Value& json)
   json["Address"] = fAddress;
   json["Status"] = fStatus;
   json["Role"] = fRole;
-
-
-
 }

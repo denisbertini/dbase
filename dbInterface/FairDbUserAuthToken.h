@@ -47,7 +47,7 @@ class FairDbUserAuthToken : public FairDbRelationalParSet<FairDbUserAuthToken>
 
     UInt_t GetIndex(UInt_t /*def*/) const { return fId; }
 
-    FairDbUser* GetUser();
+    std::unique_ptr<FairDbUser> GetUser();
 
     void SetUser(FairDbUser& value);
 
@@ -61,9 +61,9 @@ class FairDbUserAuthToken : public FairDbRelationalParSet<FairDbUserAuthToken>
     void SetToken(string value) { fToken = value; }
     void SetExpirationTime(ValTimeStamp value) { fExpirationTime = value; }
 
-    static TObjArray* GetByUserId(Int_t UserId, UInt_t rid=0);
-    static TObjArray* GetByToken(string Token, UInt_t rid=0);
-    static TObjArray* GetByExpirationTime(ValTimeStamp ExpirationTime, UInt_t rid=0);
+    static std::vector<FairDbUserAuthToken> GetByUserId(Int_t UserId, UInt_t rid=0);
+    static std::vector<FairDbUserAuthToken> GetByToken(string Token, UInt_t rid=0);
+    static std::vector<FairDbUserAuthToken> GetByExpirationTime(ValTimeStamp ExpirationTime, UInt_t rid=0);
 
 #ifndef __CINT__
     virtual void FillFromJson(Json::Value json);
@@ -71,7 +71,7 @@ class FairDbUserAuthToken : public FairDbRelationalParSet<FairDbUserAuthToken>
 #endif
 
   private:
-    FairDbUser* fUser; //! transient relation to FairDbUser, Has One
+    std::unique_ptr<FairDbUser> fUser; //! transient relation to FairDbUser, Has One
 
     Int_t fUserId;
     string fToken;

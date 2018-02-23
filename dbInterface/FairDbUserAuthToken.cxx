@@ -32,7 +32,7 @@ FairDbUserAuthToken::FairDbUserAuthToken(FairDbDetector::Detector_t detid,
               Bool_t ownership):
   FairDbRelationalParSet<FairDbUserAuthToken>(detid, dataid, name, title, context, ownership),
   fUserId(0),
-  fUser(NULL),
+  fUser(nullptr),
   fToken(""),
   fExpirationTime(ValTimeStamp::GetBOT())
 {
@@ -42,7 +42,7 @@ FairDbUserAuthToken::FairDbUserAuthToken(const FairDbUserAuthToken& from)
   :FairDbRelationalParSet<FairDbUserAuthToken>(from)
 {
   fUserId = from.fUserId;
-  fUser = from.fUser;
+  fUser = copy_unique(from.fUser);
   fToken = from.fToken;
   fExpirationTime = from.fExpirationTime;
 }
@@ -62,7 +62,6 @@ FairDbUserAuthToken& FairDbUserAuthToken::operator=(const FairDbUserAuthToken& f
 
 FairDbUserAuthToken::~FairDbUserAuthToken()
 {
-  delete fUser;
 }
 
 void FairDbUserAuthToken::Print()
@@ -77,14 +76,12 @@ void FairDbUserAuthToken::Print()
   std::cout << std::endl;
 }
 
-FairDbUser* FairDbUserAuthToken::GetUser() {
-  if (!fUser) fUser = FairDbUser::GetById(fUserId);
-  return fUser;
+std::unique_ptr<FairDbUser> FairDbUserAuthToken::GetUser() {
+  return copy_unique(fUser);
 }
 
 void FairDbUserAuthToken::SetUser(FairDbUser& value) {
-  delete fUser;
-  fUser = new FairDbUser(value);
+  fUser = std::unique_ptr<FairDbUser>(new FairDbUser(value));
   fUserId = value.GetId();
 }
 
@@ -126,30 +123,30 @@ void FairDbUserAuthToken::Store(FairDbOutTableBuffer& res_out,
 }
 
 
-TObjArray* FairDbUserAuthToken::GetByUserId(Int_t UserId, UInt_t rid)
+std::vector<FairDbUserAuthToken> FairDbUserAuthToken::GetByUserId(Int_t UserId, UInt_t rid)
 {
   return FairDbUserAuthToken::GetBy(
-    [&UserId](FairDbUserAuthToken *inst) -> bool
+    [&UserId](const FairDbUserAuthToken inst) -> bool
       {
-        return UserId == inst->GetUserId();
+        return UserId == inst.GetUserId();
       }, rid);
 }
 
-TObjArray* FairDbUserAuthToken::GetByToken(string Token, UInt_t rid)
+std::vector<FairDbUserAuthToken> FairDbUserAuthToken::GetByToken(string Token, UInt_t rid)
 {
   return FairDbUserAuthToken::GetBy(
-    [&Token](FairDbUserAuthToken *inst) -> bool
+    [&Token](const FairDbUserAuthToken inst) -> bool
       {
-        return Token == inst->GetToken();
+        return Token == inst.GetToken();
       }, rid);
 }
 
-TObjArray* FairDbUserAuthToken::GetByExpirationTime(ValTimeStamp ExpirationTime, UInt_t rid)
+std::vector<FairDbUserAuthToken> FairDbUserAuthToken::GetByExpirationTime(ValTimeStamp ExpirationTime, UInt_t rid)
 {
   return FairDbUserAuthToken::GetBy(
-    [&ExpirationTime](FairDbUserAuthToken *inst) -> bool
+    [&ExpirationTime](const FairDbUserAuthToken inst) -> bool
       {
-        return ExpirationTime == inst->GetExpirationTime();
+        return ExpirationTime == inst.GetExpirationTime();
       }, rid);
 }
 

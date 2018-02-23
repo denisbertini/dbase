@@ -26,7 +26,7 @@ void FairDbWtGenericResource<T>::GetById(const Wt::Http::Request& request, Json:
 {
   Int_t id = requestData.get("Id", -1).asInt();
   UInt_t rid = requestData.get("Rid", (UInt_t)ValTimeStamp()).asUInt();
-  T *instance = T::GetById(id, rid);
+  std::unique_ptr<T> instance = T::GetById(id, rid);
 
   if (instance)
   {
@@ -34,24 +34,21 @@ void FairDbWtGenericResource<T>::GetById(const Wt::Http::Request& request, Json:
   } else {
     responseData["error"] = "Not found";
   }
-  delete instance;
 }
 
 template<typename T>
 void FairDbWtGenericResource<T>::GetAllVersions(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData)
 {
   Int_t id = requestData.get("Id", -1).asInt();
-  T *instance = T::GetById(id, ValTimeStamp());
+  std::unique_ptr<T> instance = T::GetById(id, ValTimeStamp());
   if (instance)
   {
-    TObjArray *array = instance->GetAllVersions();
+    std::vector<T> array = instance->GetAllVersions();
     Json::Value jsonArray = T::ToJsonArray(array);
     responseData["data"] = jsonArray;
-    delete array;
   } else {
     responseData["error"] = "Not found";
   }
-  delete instance;
 }
 
 template<typename T>
@@ -67,27 +64,24 @@ void FairDbWtGenericResource<T>::GetArray(const Wt::Http::Request& request, Json
     return;
   }
 
-  Int_t *ids = new Int_t[idsCount];
+  std::vector<Int_t> ids(idsCount);
   for (Int_t i = 0; i < idsCount; i++)
   {
     ids[i] = jsonIdsArray.get(i, -1).asInt();
   }
 
-  TObjArray *array = T::GetByIds(ids, idsCount, rid);
+  std::vector<T> array = T::GetByIds(ids, rid);
   Json::Value jsonArray = T::ToJsonArray(array);
   responseData["data"] = jsonArray;
-  delete[] ids;
-  delete array;
 }
 
 template<typename T>
 void FairDbWtGenericResource<T>::GetAll(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData)
 {
   UInt_t rid = requestData.get("Rid", (UInt_t)ValTimeStamp()).asUInt();
-  TObjArray *array = T::GetAll(rid);
+  std::vector<T> array = T::GetAll(rid);
   Json::Value jsonArray = T::ToJsonArray(array);
   responseData["data"] = jsonArray;
-  delete array;
 }
 
 template<typename T>
@@ -95,7 +89,7 @@ void FairDbWtGenericResource<T>::Store(const Wt::Http::Request& request, Json::V
 {
   UInt_t rid = requestData.get("Rid", (UInt_t)ValTimeStamp()).asUInt();
   Json::Value object = requestData.get("Object", Json::Value(Json::nullValue));
-  T *instance = T::FromJson(object);
+  std::unique_ptr<T> instance = T::FromJson(object);
   if (instance)
   {
     std::string prefix = boost::typeindex::type_id<T>().pretty_name();
@@ -106,7 +100,6 @@ void FairDbWtGenericResource<T>::Store(const Wt::Http::Request& request, Json::V
   } else {
     responseData["error"] = "Object: wrong type, must be json object";
   }
-  delete instance;
 }
 
 template<typename T>
@@ -115,8 +108,8 @@ void FairDbWtGenericResource<T>::StoreArray(const Wt::Http::Request& request, Js
   UInt_t rid = requestData.get("Rid", (UInt_t)ValTimeStamp()).asUInt();
   Json::Value jsonArray = requestData.get("Array", Json::Value(Json::nullValue));
 
-  TObjArray *array = T::FromJsonArray(jsonArray);
-  if (array)
+  std::vector<T> array = T::FromJsonArray(jsonArray);
+  if (array.size())
   {
     std::string prefix = boost::typeindex::type_id<T>().pretty_name();
     std::string logTitle = prefix + "::StoreArray() from " + request.clientAddress();
@@ -125,5 +118,4 @@ void FairDbWtGenericResource<T>::StoreArray(const Wt::Http::Request& request, Js
   } else {
     responseData["error"] = "Array: null or not an array";
   }
-  delete array;
 }

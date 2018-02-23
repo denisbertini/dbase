@@ -153,9 +153,9 @@ endif()
 find_package(Wt)
 
 if (Wt_FOUND AND Boost_FOUND)
-add_subdirectory(dbWt) 
+add_subdirectory(dbWt)
 endif()
 
 if (Boost_FOUND)
-add_subdirectory(dbExamples) 
+add_subdirectory(dbExamples)
 endif()

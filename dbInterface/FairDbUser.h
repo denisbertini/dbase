@@ -85,11 +85,11 @@ class FairDbUser : public FairDbRelationalParSet<FairDbUser>
     void SetRole(Int_t value) { fRole = value; }
     void SetToken(string value) { fToken = value; }
 
-    static TObjArray* GetByFullName(string FullName, UInt_t rid=0);
-    static TObjArray* GetByEmail(string Email, UInt_t rid=0);
-    static TObjArray* GetByAddress(string Address, UInt_t rid=0);
-    static TObjArray* GetByStatus(Int_t Status, UInt_t rid=0);
-    static TObjArray* GetByRole(Int_t Role, UInt_t rid=0);
+    static std::vector<FairDbUser> GetByFullName(string FullName, UInt_t rid=0);
+    static std::vector<FairDbUser> GetByEmail(string Email, UInt_t rid=0);
+    static std::vector<FairDbUser> GetByAddress(string Address, UInt_t rid=0);
+    static std::vector<FairDbUser> GetByStatus(Int_t Status, UInt_t rid=0);
+    static std::vector<FairDbUser> GetByRole(Int_t Role, UInt_t rid=0);
 
 #ifndef __CINT__
     virtual void FillFromJson(Json::Value json);

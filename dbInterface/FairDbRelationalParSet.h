@@ -26,17 +26,16 @@ class FairDbRelationalParSet : public FairDbGenericParSet<T>
     Int_t GetId() const { return fId; }
     void SetId(Int_t value) { fId = value; this->SetCompId(fId); }
 
-    static T* GetById(Int_t id, UInt_t rid=0);
-    static TObjArray* GetByIds(Int_t* ids, UInt_t count, UInt_t rid=0);
-    static TObjArray* GetByIds(std::vector<Int_t> ids, UInt_t rid=0);
+    static std::unique_ptr<T> GetById(Int_t id, UInt_t rid=0);
+    static std::vector<T> GetByIds(std::vector<Int_t> ids, UInt_t rid=0);
 
 #ifndef __CINT__
-    static T* FromJsonString(string jsonString);
-    static T* FromJson(Json::Value json);
-    static TObjArray* FromJsonArray(Json::Value jsonArray);
-    string ToJsonString();
+    static std::unique_ptr<T> FromJsonString(std::string jsonString);
+    static std::unique_ptr<T> FromJson(Json::Value json);
+    static std::vector<T> FromJsonArray(Json::Value jsonArray);
+    std::string ToJsonString();
     Json::Value ToJson();
-    static Json::Value ToJsonArray(TObjArray* array);
+    static Json::Value ToJsonArray(std::vector<T> array);
 
     virtual void FillFromJson(Json::Value json) { ; }
     virtual void StoreToJson(Json::Value& json) { ; }
