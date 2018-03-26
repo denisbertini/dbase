@@ -10,7 +10,7 @@
 #include "FairDbString.h"               // for IsBool, IsFloat, IsInt, etc
 #include "FairRegistry.h"               // for FairRegistry, etc
 
-#include "Riosfwd.h"                    // for ostream
+#include <iosfwd>                    // for ostream
 
 #include <cmath>                        // IWYU pragma: keep for rint
 // IWYU pragma: no_include <architecture/i386/math.h>

@@ -12,7 +12,7 @@
 
 #include "ValTimeStamp.h"               // for ValTimeStamp
 
-#include "Riosfwd.h"                    // for ifstream, ofstream
+#include <iosfwd>                    // for ifstream, ofstream
 #if !defined(__CINT__) || defined(__MAKECINT__)
 #include "Rtypes.h"                     // for Bool_t, UInt_t, kFALSE, etc
 #endif

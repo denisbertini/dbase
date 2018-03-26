@@ -7,7 +7,7 @@
  ********************************************************************************/
 #include "FairDbConfigNotice.h"
 #include "FairDbLogService.h"
-#include "Riosfwd.h"                    // for istream, ostream
+#include <iosfwd>                    // for istream, ostream
 
 #include <iostream>                     // for operator<<, basic_ostream, etc
 #include <string>                       // for operator>>, string

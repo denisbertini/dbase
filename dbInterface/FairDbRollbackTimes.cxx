@@ -12,7 +12,7 @@
 #include "FairRegistry.h"               // for FairRegistry, etc
 #include "ValTimeStamp.h"               // for ValTimeStamp
 
-#include "Riosfwd.h"                    // for ostream
+#include <iosfwd>                    // for ostream
 #include "TString.h"                    // for TString, etc
 
 #include <cstring>                      // for strncmp

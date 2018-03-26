@@ -7,7 +7,7 @@
  ********************************************************************************/
 #include "FairDbConnection.h"
 #include "FairDbLogService.h"
-#include "Riosfwd.h"                    // for ostream
+#include <iosfwd>                    // for ostream
 #include "TSQLServer.h"                 // for TSQLServer
 #include "TSQLStatement.h"              // for TSQLStatement
 #include "TSystem.h"                    // for TSystem, gSystem

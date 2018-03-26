@@ -124,6 +124,8 @@ class FairDbObjTableMap : public FairParGenericSet
   virtual void fill(UInt_t rid=0) {;}
   virtual void store(UInt_t rid=0) {;}
 
+  virtual bool Validate(const FairDbValRecord* valrec) const { return true; }
+
 
   protected:
     //

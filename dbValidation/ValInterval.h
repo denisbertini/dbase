@@ -13,7 +13,7 @@
 
 #include "ValTimeStamp.h"               // for ValTimeStamp
 
-#include "Riosfwd.h"                    // for ostream
+#include <iosfwd>                    // for ostream
 #include "Rtypes.h"                     // for Int_t, Bool_t, Option_t, etc
 #include "TString.h"                    // for TString
 

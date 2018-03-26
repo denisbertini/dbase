@@ -5,11 +5,7 @@
 **/
 
 #include "FairDbWtUserSessionStore.h"
-
-#include <Wt/Auth/PasswordVerifier>
-#include <Wt/Auth/HashFunction>
-#include <Wt/Auth/PasswordHash>
-#include <Wt/WString>
+#include "FairDbWtPasswordService.h"
 
 FairDbWtUserSessionStore* FairDbWtUserSessionStore::fInstance  = 0;
 
@@ -42,18 +38,13 @@ std::string FairDbWtUserSessionStore::GetToken(std::string email, std::string pa
     return std::string();
   }
 
-  Wt::Auth::PasswordVerifier *verifier = new Wt::Auth::PasswordVerifier();
-  Wt::Auth::BCryptHashFunction *bcrypt = new Wt::Auth::BCryptHashFunction(7);
-  verifier->addHashFunction(bcrypt);
-
-  Wt::Auth::PasswordHash hash(bcrypt->name(), user.GetPasswordSalt(), user.GetPasswordHash());
-  bool result = verifier->verify(password, hash);
+  bool result = FairDbWtPasswordService::VerifyPassword(password, { user.GetPasswordHash(), user.GetPasswordSalt() } );
 
   if (!result) {
     return std::string();
   }
 
-  std::string token(verifier->hashPassword("").value());
+  std::string token(FairDbWtPasswordService::HashPassword(std::string()).Hash);
   fSessionAuth[token] = user;
 
   return token;
@@ -71,18 +62,13 @@ std::unique_ptr<FairDbUser> FairDbWtUserSessionStore::Login(std::string email, s
     return nullptr;
   }
 
-  Wt::Auth::PasswordVerifier *verifier = new Wt::Auth::PasswordVerifier();
-  Wt::Auth::BCryptHashFunction *bcrypt = new Wt::Auth::BCryptHashFunction(7);
-  verifier->addHashFunction(bcrypt);
-
-  Wt::Auth::PasswordHash hash(bcrypt->name(), user.GetPasswordSalt(), user.GetPasswordHash());
-  bool result = verifier->verify(password, hash);
+  bool result = FairDbWtPasswordService::VerifyPassword(password, { user.GetPasswordHash(), user.GetPasswordSalt() } );
 
   if (!result) {
     return nullptr;
   }
 
-  std::string token(verifier->hashPassword("").value());
+  std::string token(FairDbWtPasswordService::HashPassword(std::string()).Hash);
   user.SetToken(token);
   fSessionAuth[token] = user;
 

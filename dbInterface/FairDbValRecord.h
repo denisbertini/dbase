@@ -14,7 +14,7 @@
 #include "ValInterval.h"                    // for ValInterval
 #include "ValTimeStamp.h"                // for ValTimeStamp
 
-#include "Riosfwd.h"                    // for ostream
+#include <iosfwd>                    // for ostream
 #include "Rtypes.h"                     // for Int_t, Bool_t, UInt_t, etc
 
 #include <iosfwd>                       // for ostream

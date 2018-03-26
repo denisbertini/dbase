@@ -10,7 +10,7 @@
 #include "FairDbString.h"               // for StringTok
 #include "FairRegistry.h"               // for FairRegistry, etc
 #include "FairDbLogService.h"
-#include "Riosfwd.h"                    // for ostream
+#include <iosfwd>                    // for ostream
 
 #include <string.h>                     // for strncmp
 #include <iostream>                     // for operator<<, basic_ostream, etc

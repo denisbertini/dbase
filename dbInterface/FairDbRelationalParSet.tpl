@@ -56,6 +56,13 @@ void FairDbRelationalParSet<T>::store(UInt_t rid)
   if (fId == -1)
   {
     SetId(AllocateNextId());
+    if (fId == -1) {
+      DBLOG("FairDb", FairDbLog::kInfo)
+        << "FairDbRelationalParSet<T>::store()"
+        << " refuse to store entitty with Id = -1"
+        << std::endl;
+      return;
+    }
   }
 
   FairDbGenericParSet<T>::store(rid);
@@ -74,38 +81,34 @@ void FairDbRelationalParSet<T>::PurgeCache()
 template<typename T>
 Int_t FairDbRelationalParSet<T>::AllocateNextId()
 {
-  FairDbString sql;
-
   // needs to be uppercase
   std::string tableName = this->GetTableName();
-
   bool tableExists = this->fMultConn->TableExists(tableName, this->fDbEntry);
-  if ( ! tableExists ) { return 0; }
-  auto_ptr<FairDbStatement> stmtDb(this->fMultConn->CreateStatement(this->fDbEntry) );
-  if ( ! stmtDb.get() ) { return 0; }
+  if (!tableExists) {
+    return 0;
+  }
+
+  std::unique_ptr<FairDbStatement> statement(this->fMultConn->CreateStatement(this->fDbEntry));
+  if (!statement) {
+    return -1;
+  }
 
   FairDbConnectionPool::BLock Block(this->fMultConn->CreateStatement(this->fDbEntry), tableName, tableName);
   if ( ! Block.IsBLocked() ) {
-    DBLOG("FairDb",FairDbLog::kInfo)<< "Unable to lock " << tableName << endl;
-    return 0;
+    DBLOG("FairDb",FairDbLog::kInfo)<< "FairDbRelationalParSet<T>::AllocateNextId Unable to lock " << tableName << std::endl;
+    return -1;
   }
-  sql.Clear();
 
+  FairDbString sql;
   sql << "SELECT ID FROM " << tableName << " ORDER BY ID DESC LIMIT 1";
-  DBLOG("FairDb",FairDbLog::kInfo) << " tableName: " << tableName << " query: " << sql.c_str() << endl;
-  TSQLStatement* stmt = stmtDb->ExecuteQuery(sql.c_str());
-  stmtDb->PrintExceptions(FairDbLog::kInfo);
+  std::unique_ptr<TSQLStatement> stmt(statement->ExecuteQuery(sql.c_str()));
+  statement->PrintExceptions(FairDbLog::kInfo);
+
   Int_t id = 0;
-  if ( stmt && stmt->NextResultRow() ) {
+  if (stmt && stmt->NextResultRow()) {
     id = stmt->GetInt(0) + 1;
-  } else {
-    DBLOG("FairDb",FairDbLog::kInfo)<< "Unable to find default SeqNo"
-                                     << " due to above error" << endl;
   }
 
-  delete stmt;
-  stmt = 0;
-  DBLOG("FairDb",FairDbLog::kInfo)<< "query returned last generated seqno: " << id << endl;
   return id;
 }
 
@@ -135,26 +138,24 @@ std::vector<T> FairDbRelationalParSet<T>::GetByIds(std::vector<Int_t> ids, UInt_
 template<typename T>
 std::unique_ptr<T> FairDbRelationalParSet<T>::FromJsonString(std::string jsonString)
 {
-  Json::Value json;
-  std::string error;
-  Json::CharReaderBuilder readerBuilder;
-  Json::CharReader *reader = readerBuilder.newCharReader();
-  Bool_t result = reader->parse(jsonString.data(), jsonString.data() + jsonString.size(), &json, &error);
-  if (!result)
+  try
   {
-    cout << "FairDbRelationalParSet<T>::FromJsonString" << endl;
-    cout << error << endl;
+    jsoncons::strict_parse_error_handler errorHandler;
+    jsoncons::json json = jsoncons::json::parse(jsonString, errorHandler);
+    return FromJson(json);
+  }
+  catch (const jsoncons::parse_error& e)
+  {
+    std::cout << "FairDbRelationalParSet<T>::FromJsonString" << std::endl;
+    std::cout << e.what() << std::endl;
     return nullptr;
   }
-  delete reader;
-
-  return FromJson(json);
 }
 
 template<typename T>
-std::unique_ptr<T> FairDbRelationalParSet<T>::FromJson(Json::Value json)
+std::unique_ptr<T> FairDbRelationalParSet<T>::FromJson(jsoncons::json json)
 {
-  if (!json.isObject())
+  if (!json.is_object())
   {
     return nullptr;
   }
@@ -165,9 +166,9 @@ std::unique_ptr<T> FairDbRelationalParSet<T>::FromJson(Json::Value json)
 }
 
 template<typename T>
-std::vector<T> FairDbRelationalParSet<T>::FromJsonArray(Json::Value jsonArray)
+std::vector<T> FairDbRelationalParSet<T>::FromJsonArray(jsoncons::json jsonArray)
 {
-  if (!jsonArray.isArray())
+  if (!jsonArray.is_array())
   {
     return {};
   }
@@ -175,7 +176,7 @@ std::vector<T> FairDbRelationalParSet<T>::FromJsonArray(Json::Value jsonArray)
   std::vector<T> result;
   result.reserve(jsonArray.size());
 
-  for (const Json::Value& element : jsonArray)
+  for (const jsoncons::json& element : jsonArray.array_range())
   {
     std::unique_ptr<T> deserialized(std::move(FromJson(element)));
     if (deserialized)
@@ -190,19 +191,15 @@ std::vector<T> FairDbRelationalParSet<T>::FromJsonArray(Json::Value jsonArray)
 template<typename T>
 std::string FairDbRelationalParSet<T>::ToJsonString()
 {
-  ostringstream stream;
-  Json::StreamWriterBuilder writerBuilder;
-  Json::StreamWriter *writer = writerBuilder.newStreamWriter();
-
-  writer->write(ToJson(), &stream);
-  delete writer;
-  return stream.str();
+  std::ostringstream s;
+  s << jsoncons::pretty_print(ToJson());
+  return s.str();
 }
 
 template<typename T>
-Json::Value FairDbRelationalParSet<T>::ToJson()
+jsoncons::json FairDbRelationalParSet<T>::ToJson()
 {
-  Json::Value result;
+  jsoncons::json result;
 
   StoreToJson(result);
 
@@ -210,9 +207,9 @@ Json::Value FairDbRelationalParSet<T>::ToJson()
 }
 
 template<typename T>
-Json::Value FairDbRelationalParSet<T>::ToJsonArray(std::vector<T> array)
+jsoncons::json FairDbRelationalParSet<T>::ToJsonArray(std::vector<T> array)
 {
-  Json::Value jsonArray(Json::arrayValue);
+  jsoncons::json jsonArray = jsoncons::json::array();
 
   Int_t count = array.size();
   jsonArray.resize(count);

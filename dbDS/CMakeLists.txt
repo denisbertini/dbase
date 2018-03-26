@@ -7,28 +7,31 @@
 
 
 set(INCLUDE_DIRECTORIES
-${BASE_INCLUDE_DIRECTORIES}
-${ROOT_INCLUDE_DIR}
-${CMAKE_SOURCE_DIR}/dbase/
-${CMAKE_SOURCE_DIR}/dbase/dbInterface
-${CMAKE_SOURCE_DIR}/dbase/dbUtils
-${CMAKE_SOURCE_DIR}/dbase/dbDS
-${CMAKE_SOURCE_DIR}/dbase/dbDS/core
-${CMAKE_SOURCE_DIR}/dbase/dbDS/utils
-${CMAKE_SOURCE_DIR}/dbase/dbDS/procs
+  ${CMAKE_SOURCE_DIR}
+  ${FAIRROOT_INCLUDE_DIR}
+  ${ROOT_INCLUDE_DIR}
+  ${BASE_INCLUDE_DIRECTORIES}
+
+  ${CMAKE_SOURCE_DIR}/dbInterface
+  ${CMAKE_SOURCE_DIR}/dbUtils
+  ${CMAKE_SOURCE_DIR}/dbDS
+  ${CMAKE_SOURCE_DIR}/dbDS/core
+  ${CMAKE_SOURCE_DIR}/dbDS/utils
+  ${CMAKE_SOURCE_DIR}/dbDS/procs
 )
 
 Set(SYSTEM_INCLUDE_DIRECTORIES
   ${Boost_INCLUDE_DIR}
-  )
+)
 
 include_directories(${INCLUDE_DIRECTORIES})
 Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 
 set(LINK_DIRECTORIES
-    ${ROOT_LIBRARY_DIR}
-    ${Boost_LIBRARY_DIRS}
-) 
+  ${ROOT_LIBRARY_DIR}
+  ${FAIRROOT_LIBRARY_DIR}
+  ${Boost_LIBRARY_DIRS}
+)
 
 link_directories(${LINK_DIRECTORIES})
 
@@ -58,9 +61,9 @@ set(LIBRARY_NAME FairDbDS)
 
 if (Boost_FOUND)
   set(DEPENDENCIES
-    Base FairDB ParBase FairMQ ${ZMQ_LIBRARY_SHARED} boost_thread boost_system boost_serialization)
+    Rint Base FairDB ParBase FairMQ ${ZMQ_LIBRARY_SHARED} boost_thread boost_system boost_serialization)
 else (Boost_FOUND)
-  set(DEPENDENCIES Base  FairDB ParBase)
+  set(DEPENDENCIES Rint Base FairDB ParBase)
 endif (Boost_FOUND)
 
 GENERATE_LIBRARY()
@@ -82,7 +85,7 @@ if (Boost_FOUND)
     list(GET Exe_Source ${_file} _src)
     set(EXE_NAME ${_name})
     set(SRCS ${_src})
-    set(DEPENDENCIES FairDB FairDbDS ParBase FairDbMQ ${ZMQ_LIBRARY_SHARED} boost_thread boost_system boost_serialization)
+    set(DEPENDENCIES Rint FairDB FairDbDS ParBase FairDbMQ ${ZMQ_LIBRARY_SHARED} boost_thread boost_system boost_serialization)
     GENERATE_EXECUTABLE()
   endforeach(_file RANGE 0 ${_length})
 endif (Boost_FOUND)

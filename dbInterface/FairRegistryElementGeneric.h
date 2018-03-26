@@ -12,8 +12,8 @@
 #include "FairRegistryElement.h"           // for FairRegistryElement
 
 #include "TBuffer.h"                    // for TBuffer
-#include "Riosfwd.h"                    // for ostream, istream
-#include "Rtypeinfo.h"                  // for type_info
+#include <iosfwd>                    // for ostream, istream
+#include <typeinfo>                  // for type_info
 #include "Rtypes.h"                     // for FairRegistryElement::Streamer, etc
 
 #include <iostream>                     // IWYU pragma: keep

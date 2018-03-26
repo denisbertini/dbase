@@ -8,7 +8,7 @@
 #ifndef FAIRDBEXCEPTION
 #define FAIRDBEXCEPTION
 
-#include "Riosfwd.h"                    // for ostream
+#include <iosfwd>                    // for ostream
 #include "Rtypes.h"                     // for Int_t, etc
 
 #include <iosfwd>                       // for ostream

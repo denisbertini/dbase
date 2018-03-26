@@ -13,7 +13,7 @@
 #include "FairDbParSet.h"                // for FairParSet
 #include "FairRuntimeDb.h"              // for FairRuntimeDb
 
-#include "Riosfwd.h"                    // for ostream
+#include <iosfwd>                    // for ostream
 #include "TList.h"                      // for TList
 #include "TString.h"                    // for TString
 

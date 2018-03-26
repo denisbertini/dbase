@@ -114,6 +114,19 @@ string FairDbUser::GetTableDefinition(const char* Name)
   return sql;
 }
 
+bool FairDbUser::Validate(const FairDbValRecord* valrec) const
+{
+  if (fPasswordHash.empty()) {
+    throw std::invalid_argument("FairDbUser: password hash is empty");
+  }
+
+  if (FairDbUser::GetByEmail(fEmail, ValTimeStamp()).size()) {
+    throw std::invalid_argument("FairDbUser: user with this email address is already registered");
+  }
+
+  return true;
+}
+
 void FairDbUser::Fill(FairDbResultPool& res_in,
                         const FairDbValRecord* valrec)
 {
@@ -131,11 +144,6 @@ void FairDbUser::Fill(FairDbResultPool& res_in,
 void FairDbUser::Store(FairDbOutTableBuffer& res_out,
                          const FairDbValRecord* valrec) const
 {
-  if (fPasswordHash.empty()) {
-    std::cout << "FairDbUser: Will not accept an empty password hash" << std::endl;
-    throw std::runtime_error("FairDbUser: Will not accept an empty password hash");
-  }
-
   res_out << fId;
   res_out << fFullName;
   res_out << fEmail;
@@ -191,17 +199,17 @@ std::vector<FairDbUser> FairDbUser::GetByRole(Int_t Role, UInt_t rid)
       }, rid);
 }
 
-void FairDbUser::FillFromJson(Json::Value json)
+void FairDbUser::FillFromJson(jsoncons::json json)
 {
-  SetId(json["Id"].asInt());
-  SetFullName(json["FullName"].asString());
-  SetEmail(json["Email"].asString());
-  SetAddress(json["Address"].asString());
-  SetStatus(json["Status"].asInt());
-  SetRole(json["Role"].asInt());
+  SetId(json["Id"].as<Int_t>());
+  SetFullName(json["FullName"].as<std::string>());
+  SetEmail(json["Email"].as<std::string>());
+  SetAddress(json["Address"].as<std::string>());
+  SetStatus(json["Status"].as<Int_t>());
+  SetRole(json["Role"].as<Int_t>());
 }
 
-void FairDbUser::StoreToJson(Json::Value& json)
+void FairDbUser::StoreToJson(jsoncons::json& json)
 {
   json["Id"] = fId;
   json["FullName"] = fFullName;

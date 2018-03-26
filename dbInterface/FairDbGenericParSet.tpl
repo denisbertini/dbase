@@ -112,7 +112,7 @@ void FairDbGenericParSet<T>::CreateDbTable(Int_t db_entry)
   // Boolean IO test variable
   Bool_t fail= kFALSE;
   // Create a unique statement on choosen DB entry
-  auto_ptr<FairDbStatement> stmtDbn(fMultConn->CreateStatement(GetDbEntry()));
+  std::unique_ptr<FairDbStatement> stmtDbn(fMultConn->CreateStatement(GetDbEntry()));
   if ( ! stmtDbn.get() ) {
     DBLOG("FairDb",FairDbLog::kFatal) << "FairDbGenericParSet::CreateDbTable()  Cannot create statement for Database_id: " << GetDbEntry()
          << "\n    Please check the FAIRDB_TSQL_* environment.  Quitting ... " << endl;
@@ -233,7 +233,7 @@ std::vector<T> FairDbGenericParSet<T>::GetAll(UInt_t rid)
 template<typename T>
 std::vector<T> FairDbGenericParSet<T>::GetAllVersions()
 {
-  auto_ptr<FairDbStatement> stmtDbn(fMultConn->CreateStatement(GetDbEntry()));
+  std::unique_ptr<FairDbStatement> stmtDbn(fMultConn->CreateStatement(GetDbEntry()));
   if ( ! stmtDbn.get() ) {
     DBLOG("FairDb",FairDbLog::kFatal) << "FairDbGenericParSet::Store()  Cannot create statement for Database_id: " << GetDbEntry()
          << "\n    Please check the FAIRDB_TSQL_* environment.  Quitting ... " << endl;
@@ -269,7 +269,7 @@ void FairDbGenericParSet<T>::store(UInt_t rid)
   // Boolean IO test variable
   Bool_t fail= kFALSE;
   // Create a unique statement on choosen DB entry
-  auto_ptr<FairDbStatement> stmtDbn(fMultConn->CreateStatement(GetDbEntry()));
+  std::unique_ptr<FairDbStatement> stmtDbn(fMultConn->CreateStatement(GetDbEntry()));
   if ( ! stmtDbn.get() ) {
     DBLOG("FairDb",FairDbLog::kFatal) << "FairDbGenericParSet::Store()  Cannot create statement for Database_id: " << GetDbEntry()
          << "\n    Please check the FAIRDB_TSQL_* environment.  Quitting ... " << endl;
@@ -352,7 +352,7 @@ FairDbWriter<T>* FairDbGenericParSet<T>::ActivateWriter(Int_t rid)
     // Create according to IoV
     Bool_t fail= kFALSE;
     // Create a unique statement on choosen DB entry
-    auto_ptr<FairDbStatement> stmtDbn(fMultConn->CreateStatement(GetDbEntry()));
+    std::unique_ptr<FairDbStatement> stmtDbn(fMultConn->CreateStatement(GetDbEntry()));
     if ( ! stmtDbn.get() ) {
       DBLOG("FairDb",FairDbLog::kFatal) << "FairDbGenericParSet::ActivateWriter()  Cannot create statement for Database_id: " << GetDbEntry()
            << "\n    Please check the FAIRDB_TSQL_* environment.  Quitting ... " << endl;

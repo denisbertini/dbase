@@ -14,7 +14,7 @@
 
 #include "FairDb.h"                     // for Version
 
-#include "Riosfwd.h"                    // for ostream
+#include <iosfwd>                    // for ostream
 #include "Rtypes.h"                     // for Int_t, Bool_t, etc
 #include "DataType.h"                    // for FullMask
 #include "TObject.h"                    // for TObject

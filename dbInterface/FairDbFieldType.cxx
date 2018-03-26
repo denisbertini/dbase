@@ -7,7 +7,7 @@
  ********************************************************************************/
 #include "FairDbFieldType.h"
 #include "FairDbLogService.h"
-#include "Riosfwd.h"                    // for ostream
+#include <iosfwd>                    // for ostream
 #include "TSQLServer.h"                 // for TSQLServer, etc
 #include "TString.h"                    // for operator==, TString
 
@@ -568,6 +568,8 @@ Bool_t FairDbFieldType::IsCompatible(const FairDbFieldType& other) const
   if ( fConcept == concept ) { return kTRUE; }
   if ( MATCHES(FairDb::kBool,  FairDb::kChar)  ) { return kTRUE; }
   if ( MATCHES(FairDb::kBool,  FairDb::kUChar) ) { return kTRUE; }
+  if ( MATCHES(FairDb::kBool,  FairDb::kInt)   ) { return kTRUE; }
+  if ( MATCHES(FairDb::kBool,  FairDb::kUInt)  ) { return kTRUE; }
   if ( MATCHES(FairDb::kInt,   FairDb::kChar)  ) { return kTRUE; }
   if ( MATCHES(FairDb::kUInt,  FairDb::kUChar) ) { return kTRUE; }
   if ( MATCHES(FairDb::kUInt,  FairDb::kInt)   ) { return kTRUE; }

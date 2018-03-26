@@ -123,10 +123,4 @@
 #pragma link C++ class FairDbRelationalParSet<FairDbUser>+;
 #pragma link C++ class FairDbUser+;
 
-#pragma link C++ class FairDbReader<FairDbUserAuthToken>+;
-#pragma link C++ class FairDbWriter<FairDbUserAuthToken>+;
-#pragma link C++ class FairDbGenericParSet<FairDbUserAuthToken>+;
-#pragma link C++ class FairDbRelationalParSet<FairDbUserAuthToken>+;
-#pragma link C++ class FairDbUserAuthToken+;
-
 #endif

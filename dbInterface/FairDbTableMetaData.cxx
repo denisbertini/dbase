@@ -10,7 +10,7 @@
 #include "FairDb.h"                     // for DbTypes::kMySQL, etc
 #include "FairDbString.h"               // for FairDbString
 
-#include "Riosfwd.h"                    // for ostream
+#include <iosfwd>                    // for ostream
 #include "TString.h"                    // for TString, operator<<
 
 #include <cassert>                      // for assert

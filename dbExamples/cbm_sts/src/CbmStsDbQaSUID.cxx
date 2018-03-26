@@ -17,7 +17,7 @@
 
 #include "FairParamList.h"              // for FairParamList
 
-#include "Riosfwd.h"                    // for ostream
+#include <iosfwd>                    // for ostream
 #include "TString.h"                    // for TString
 #include "TSystem.h"
 

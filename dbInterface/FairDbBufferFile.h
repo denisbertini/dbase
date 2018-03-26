@@ -8,7 +8,7 @@
 #ifndef FAIRDBBUFFERFILE_H
 #define FAIRDBBUFFERFILE_H
 
-#include "Riosfwd.h"                    // for fstream
+#include <iosfwd>                    // for fstream
 
 #ifndef ROOT_Rtypes
 #if !defined(__CINT__) || defined(__MAKECINT__)

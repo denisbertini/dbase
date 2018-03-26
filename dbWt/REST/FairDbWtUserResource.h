@@ -14,18 +14,18 @@
 #include <Wt/Http/Response>
 #include "FairDbWtBaseResource.h"
 
-#include "json/json.h"
+#include <jsoncons/json.hpp>
 
 class FairDbWtUserResource: public FairDbWtBaseResource
 {
   public:
     FairDbWtUserResource(Wt::WServer& server, Wt::WObject *parent = 0);
 
-    void Login(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData);
-    void Register(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData);
-    void GetById(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData);
-    void Get(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData);
-    void GetAll(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData);
+    void Login(const Wt::Http::Request& request, jsoncons::json requestData, Wt::Http::Response& response, jsoncons::json &responseData);
+    void Register(const Wt::Http::Request& request, jsoncons::json requestData, Wt::Http::Response& response, jsoncons::json &responseData);
+    void GetById(const Wt::Http::Request& request, jsoncons::json requestData, Wt::Http::Response& response, jsoncons::json &responseData);
+    void Get(const Wt::Http::Request& request, jsoncons::json requestData, Wt::Http::Response& response, jsoncons::json &responseData);
+    void GetAll(const Wt::Http::Request& request, jsoncons::json requestData, Wt::Http::Response& response, jsoncons::json &responseData);
 };
 
 #endif /* !FAIRDBWTUSERRESOURCE_H */

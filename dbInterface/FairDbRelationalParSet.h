@@ -3,9 +3,7 @@
 
 #include "FairDbGenericParSet.h"
 
-#ifndef __CINT__
-#include "json/json.h"
-#endif
+#include <jsoncons/json.hpp>
 
 template <typename T>
 class FairDbRelationalParSet : public FairDbGenericParSet<T>
@@ -26,20 +24,18 @@ class FairDbRelationalParSet : public FairDbGenericParSet<T>
     Int_t GetId() const { return fId; }
     void SetId(Int_t value) { fId = value; this->SetCompId(fId); }
 
-    static std::unique_ptr<T> GetById(Int_t id, UInt_t rid=0);
-    static std::vector<T> GetByIds(std::vector<Int_t> ids, UInt_t rid=0);
+    static std::unique_ptr<T> GetById(Int_t id, UInt_t rid=ValTimeStamp());
+    static std::vector<T> GetByIds(std::vector<Int_t> ids, UInt_t rid=ValTimeStamp());
 
-#ifndef __CINT__
     static std::unique_ptr<T> FromJsonString(std::string jsonString);
-    static std::unique_ptr<T> FromJson(Json::Value json);
-    static std::vector<T> FromJsonArray(Json::Value jsonArray);
+    static std::unique_ptr<T> FromJson(jsoncons::json json);
+    static std::vector<T> FromJsonArray(jsoncons::json jsonArray);
     std::string ToJsonString();
-    Json::Value ToJson();
-    static Json::Value ToJsonArray(std::vector<T> array);
+    jsoncons::json ToJson();
+    static jsoncons::json ToJsonArray(std::vector<T> array);
 
-    virtual void FillFromJson(Json::Value json) { ; }
-    virtual void StoreToJson(Json::Value& json) { ; }
-#endif
+    virtual void FillFromJson(jsoncons::json json) { ; }
+    virtual void StoreToJson(jsoncons::json& json) { ; }
 
   protected:
     Int_t fId;

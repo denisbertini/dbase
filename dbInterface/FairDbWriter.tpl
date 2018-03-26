@@ -214,6 +214,8 @@ FairDbWriter<T>& FairDbWriter<T>::operator<<(const T& row)
     return *this;
   }
 
+  if (!row.Validate(fValidRec))
+    return *this;
 //cout << "Writer ---> 2" << endl;
 
   if ( ! fPacket->AddDataRow(*fTableInterface,fValidRec,row) ) {

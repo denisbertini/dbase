@@ -1,28 +1,28 @@
  ################################################################################
  #    Copyright (C) 2014 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH    #
  #                                                                              #
- #              This software is distributed under the terms of the             # 
- #         GNU Lesser General Public Licence version 3 (LGPL) version 3,        #  
+ #              This software is distributed under the terms of the             #
+ #         GNU Lesser General Public Licence version 3 (LGPL) version 3,        #
  #                  copied verbatim in the file "LICENSE"                       #
  ################################################################################
 # Date: 13.08.14 D.Bertini
-# Create a library called "libFairDbMQ" 
+# Create a library called "libFairDbMQ"
 #
-# All SQL drivers "includes" and "libraries" are not imeediately set 
+# All SQL drivers "includes" and "libraries" are not imeediately set
 # because of the problem i have with CMAKE and variable set to not-found
-# Instead  those are added only if they have been previously set  
+# Instead  those are added only if they have been previously set
 
 
 set(INCLUDE_DIRECTORIES
-${BASE_INCLUDE_DIRECTORIES}
-${ROOT_INCLUDE_DIR}
-${ZMQ_INCLUDE_DIR}
-${CMAKE_SOURCE_DIR}/parbase/dbIO
-${CMAKE_SOURCE_DIR}/fairmq
-${CMAKE_SOURCE_DIR}/base/MQ
-${CMAKE_SOURCE_DIR}/dbase/dbMQ/utils
-${CMAKE_SOURCE_DIR}/dbase/dbMQ/procs
-${CMAKE_SOURCE_DIR}/dbase/dbMQ/actors
+  ${CMAKE_SOURCE_DIR}
+  ${FAIRROOT_INCLUDE_DIR}
+  ${ROOT_INCLUDE_DIR}
+  ${BASE_INCLUDE_DIRECTORIES}
+  ${ZMQ_INCLUDE_DIR}
+
+  ${CMAKE_SOURCE_DIR}/dbMQ/utils
+  ${CMAKE_SOURCE_DIR}/dbMQ/procs
+  ${CMAKE_SOURCE_DIR}/dbMQ/actors
 )
 
 include_directories(${INCLUDE_DIRECTORIES})
@@ -33,9 +33,10 @@ include_directories(${INCLUDE_DIRECTORIES})
 #endIf (Boost_FOUND)
 
 set(LINK_DIRECTORIES
-    ${ROOT_LIBRARY_DIR}
-    ${Boost_LIBRARY_DIRS}
-) 
+  ${ROOT_LIBRARY_DIR}
+  ${FAIRROOT_LIBRARY_DIR}
+  ${Boost_LIBRARY_DIRS}
+)
 
 link_directories(${LINK_DIRECTORIES})
 
@@ -53,7 +54,7 @@ set(LIBRARY_NAME FairDbMQ)
 
 if (Boost_FOUND)
   set(DEPENDENCIES
-    Base FairDB ParBase FairMQ ${ZMQ_LIBRARY_SHARED} boost_thread boost_system boost_serialization)
+    Base FairDB ParBase FairMQ fairmq_logger ${ZMQ_LIBRARY_SHARED} boost_thread boost_system boost_serialization)
 else (Boost_FOUND)
   set(DEPENDENCIES Base  FairDB ParBase)
 endif (Boost_FOUND)
@@ -63,13 +64,13 @@ GENERATE_LIBRARY()
 if (Boost_FOUND)
   set(Exe_Names
     db_dispatcher
-    db_client 
+    db_client
     db_worker
   )
 
 
   set(Exe_Source
-    procs/db_dispatcher.cxx		
+    procs/db_dispatcher.cxx
     procs/db_client.cxx
     procs/db_worker.cxx
     )

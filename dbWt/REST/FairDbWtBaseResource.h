@@ -14,12 +14,12 @@
 #include <Wt/Http/Response>
 #include "FairDbUser.h"
 
-#include "json/json.h"
+#include <jsoncons/json.hpp>
 
 class FairDbWtBaseResource: public Wt::WResource
 {
   public:
-    typedef boost::function<void (const Wt::Http::Request&, Json::Value, Wt::Http::Response&, Json::Value&)> EndpointCallback;
+    typedef boost::function<void (const Wt::Http::Request&, jsoncons::json, Wt::Http::Response&, jsoncons::json&)> EndpointCallback;
 
     FairDbWtBaseResource(Wt::WServer& server, Wt::WObject *parent = 0);
 

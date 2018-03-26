@@ -16,7 +16,7 @@
 
 #include "FairDetParIo.h"               // for FairDetParIo
 
-#include "Riosfwd.h"                    // for ostream
+#include <iosfwd>                    // for ostream
 #include "Rtypes.h"                     // for FairDetParTSQLIo::Class, etc
 
 #include <iostream>                     // for operator<<, cout, ostream

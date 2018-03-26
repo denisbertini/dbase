@@ -21,7 +21,7 @@
 #include "ValTimeStamp.h"               // for ValTimeStamp, operator<<, etc
 #include "db_detector_def.h"            // for FairDbDetector, etc
 
-#include "Riosfwd.h"                    // for ostream
+#include <iosfwd>                    // for ostream
 #include "TCollection.h"                // for TIter
 #include "TList.h"                      // for TList
 #include "TObject.h"                    // for TObject

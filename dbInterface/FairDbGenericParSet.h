@@ -27,7 +27,7 @@
 
 #include "TString.h"                   
 #include "Rtypes.h" 
-#include "Riosfwd.h"                    
+#include <iosfwd>                    
 #include <iostream> 
 #include <string>   
 #include <sstream>  
@@ -67,10 +67,10 @@ class FairDbGenericParSet : public FairDbParSet
     virtual void clear();
     virtual void fill(UInt_t rid=0);
 #ifndef __CINT__
-    static std::vector<T> GetBy(std::function<bool(const T&)> condition, UInt_t rid=0);
+    static std::vector<T> GetBy(std::function<bool(const T&)> condition, UInt_t rid=ValTimeStamp());
 #endif
-    static unique_ptr<T> GetByIndex(Int_t index, UInt_t rid=0);
-    static std::vector<T> GetAll(UInt_t rid=0);
+    static unique_ptr<T> GetByIndex(Int_t index, UInt_t rid=ValTimeStamp());
+    static std::vector<T> GetAll(UInt_t rid=ValTimeStamp());
     std::vector<T> GetAllVersions();
     virtual void store(UInt_t rid=0);
     static void StoreArray(std::vector<T>, UInt_t rid=0, std::string = "");

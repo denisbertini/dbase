@@ -12,7 +12,7 @@
 
 #include "FairDbFieldType.h"            // for FairDbFieldType
 
-#include "Riosfwd.h"                    // for ostream
+#include <iosfwd>                    // for ostream
 #include "Rtypes.h"                     // for UInt_t, Int_t, etc
 
 #include <iosfwd>                       // for ostream

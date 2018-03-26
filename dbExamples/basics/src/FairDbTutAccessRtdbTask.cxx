@@ -20,7 +20,7 @@
 #include "FairDbTutPar.h"               // for FairDbTutPar
 #include "FairRunAna.h"                 // for FairRunAna
 #include "FairRuntimeDb.h"              // for FairRuntimeDb
-#include "Riosfwd.h"                    // for ostream
+#include <iosfwd>                    // for ostream
 #include <iostream>                     // for operator<<, basic_ostream, etc
 
 using std::cout;

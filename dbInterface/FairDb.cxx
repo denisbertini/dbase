@@ -7,7 +7,7 @@
  ********************************************************************************/
 #include "FairDb.h"
 
-#include "Riosfwd.h"                    // for ostream
+#include <iosfwd>                    // for ostream
 
 #include "TBufferFile.h"
 #include "TVirtualStreamerInfo.h"

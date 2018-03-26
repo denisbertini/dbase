@@ -8,7 +8,7 @@
 #ifndef VALTIMESTAMP_H
 #define VALTIMESTAMP_H
 
-#include "Riosfwd.h"                    // for ostream
+#include <iosfwd>                    // for ostream
 #include "Rtypes.h"                     // for Int_t, Bool_t, UInt_t, etc
 #include "TTimeStamp.h"                 // for timespec_t, tm_t
 

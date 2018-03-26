@@ -10,9 +10,7 @@
 
 #include "FairDbRelationalParSet.h"
 
-#ifndef __CINT__
-#include "json/json.h"
-#endif
+#include <jsoncons/json.hpp>
 
 namespace FairDbUserRole
 {
@@ -55,6 +53,8 @@ class FairDbUser : public FairDbRelationalParSet<FairDbUser>
     // Add-ons: SQL descriptors for the parameter class
     virtual std::string GetTableDefinition(const char* Name = 0);
 
+    virtual bool Validate(const FairDbValRecord* valrec) const;
+
     // Atomic IO (intrinsic)
     virtual void Fill(FairDbResultPool& res_in,
                       const FairDbValRecord* valrec);
@@ -62,8 +62,6 @@ class FairDbUser : public FairDbRelationalParSet<FairDbUser>
                        const FairDbValRecord* valrec) const;
 
     UInt_t GetIndex(UInt_t /*def*/) const { return fId; }
-
-
 
     Int_t GetId() const { return fId; }
     string GetFullName() const { return fFullName; }
@@ -85,16 +83,14 @@ class FairDbUser : public FairDbRelationalParSet<FairDbUser>
     void SetRole(Int_t value) { fRole = value; }
     void SetToken(string value) { fToken = value; }
 
-    static std::vector<FairDbUser> GetByFullName(string FullName, UInt_t rid=0);
-    static std::vector<FairDbUser> GetByEmail(string Email, UInt_t rid=0);
-    static std::vector<FairDbUser> GetByAddress(string Address, UInt_t rid=0);
-    static std::vector<FairDbUser> GetByStatus(Int_t Status, UInt_t rid=0);
-    static std::vector<FairDbUser> GetByRole(Int_t Role, UInt_t rid=0);
+    static std::vector<FairDbUser> GetByFullName(string FullName, UInt_t rid=ValTimeStamp());
+    static std::vector<FairDbUser> GetByEmail(string Email, UInt_t rid=ValTimeStamp());
+    static std::vector<FairDbUser> GetByAddress(string Address, UInt_t rid=ValTimeStamp());
+    static std::vector<FairDbUser> GetByStatus(Int_t Status, UInt_t rid=ValTimeStamp());
+    static std::vector<FairDbUser> GetByRole(Int_t Role, UInt_t rid=ValTimeStamp());
 
-#ifndef __CINT__
-    virtual void FillFromJson(Json::Value json);
-    virtual void StoreToJson(Json::Value& json);
-#endif
+    virtual void FillFromJson(jsoncons::json json);
+    virtual void StoreToJson(jsoncons::json& json);
 
   private:
 

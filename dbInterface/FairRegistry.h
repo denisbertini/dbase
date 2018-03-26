@@ -11,8 +11,8 @@
 
 #include <TNamed.h>                     // for TNamed
 
-#include "Riosfwd.h"                    // for ostream, istream
-#include "Rtypeinfo.h"                  // for type_info
+#include <iosfwd>                    // for ostream, istream
+#include <typeinfo>                  // for type_info
 #include "Rtypes.h"                     // for FairRegistry::Class, etc
 
 #include <iostream>                     // for ostream, istream

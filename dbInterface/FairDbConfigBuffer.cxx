@@ -30,7 +30,7 @@ using std::istringstream;
 ClassImp(FairDbConfigBuffer)
 
 
-ValCondition  FairDbConfigBuffer::fgDefaultContext(FairDbDetector::kCal,
+ValCondition  FairDbConfigBuffer::fgDefaultContext(FairDbDetector::kMagnet,
     DataType::kData,
     ValTimeStamp() );
 

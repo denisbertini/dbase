@@ -11,8 +11,8 @@
 
 #include <TObject.h>
 
-#include "Riosfwd.h"                    // for istream, ostream
-#include "Rtypeinfo.h"                  // for type_info
+#include <iosfwd>                    // for istream, ostream
+#include <typeinfo>                  // for type_info
 #include "Rtypes.h"                     // for FairRegistryElement::Class, etc
 
 #include <iosfwd>                       // for istream, ostream

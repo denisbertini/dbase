@@ -10,7 +10,7 @@
 
 #include "FairDbConnection.h"           // for FairDbConnection
 
-#include "Riosfwd.h"                    // for ostream
+#include <iosfwd>                    // for ostream
 #if !defined(__CINT__) || defined(__MAKECINT__)
 #include "Rtypes.h"                     // for Int_t, UInt_t, Bool_t, etc
 #endif

@@ -14,7 +14,7 @@
 #include "ValTimeStamp.h"               // for ValTimeStamp, operator==, etc
 #include "db_detector_def.h"            // for Detector, etc
 
-#include "Riosfwd.h"                    // for ostream
+#include <iosfwd>                    // for ostream
 #include "Rtypes.h"                     // for Bool_t, Option_t, etc
 
 #include <iostream>                     // for ostream

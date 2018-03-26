@@ -3,3 +3,6 @@ TAGS
 *fairdbinfo.log
 *test.sqlite
 *.root
+dbClassGen
+dbSchemaStore
+build

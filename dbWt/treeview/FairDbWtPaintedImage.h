@@ -1,3 +1,6 @@
+#ifndef FAIRDBWTPAINTEDIMAGE
+#define FAIRDBWTPAINTEDIMAGE
+
 #include <Wt/WPaintDevice>
 #include <Wt/WPaintedWidget>
 #include <Wt/WPainter>
@@ -16,3 +19,5 @@ protected:
     void paintEvent(Wt::WPaintDevice *paintDevice);
     
 };
+
+#endif //FAIRDBWTPAINTEDIMAGE

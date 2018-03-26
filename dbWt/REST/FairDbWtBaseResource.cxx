@@ -69,10 +69,10 @@ void FairDbWtBaseResource::handleRequest(const Wt::Http::Request& request, Wt::H
     return;
   }
 
-  Json::Value requestData;
-  Json::Value responseData;
-  responseData["data"] = Json::Value(Json::nullValue);
-  responseData["error"] = Json::Value(Json::nullValue);
+  jsoncons::json requestData;
+  jsoncons::json responseData;
+  responseData["data"] = jsoncons::json::object();
+  responseData["error"] = jsoncons::json::object();
 
   try
   {
@@ -106,11 +106,19 @@ void FairDbWtBaseResource::handleRequest(const Wt::Http::Request& request, Wt::H
       }
     }
 
+    if (responseData["data"].empty()) {
+      responseData["data"] = jsoncons::json::null();
+    }
+    if (responseData["error"].empty()) {
+      responseData["error"] = jsoncons::json::null();
+    }
+
     response.out() << responseData;
 #ifdef REST_SERVER_VERBOSE
     std::cout << "Response Data:\n" << responseData << std::endl;
 #endif
-  } catch (Json::Exception &e) {
+  } catch (std::exception &e) {
+    responseData["data"] = jsoncons::json::null();
     responseData["error"] = e.what();
     response.out() << responseData;
     response.setStatus(400);

@@ -4,8 +4,12 @@
 
 
 Set(INCLUDE_DIRECTORIES
+  ${CMAKE_SOURCE_DIR}
+  ${FAIRROOT_INCLUDE_DIR}
+  ${ROOT_INCLUDE_DIR}
   ${BASE_INCLUDE_DIRECTORIES}
-  ${CMAKE_SOURCE_DIR}/dbase/dbExamples/cbm_sts/src
+
+  ${CMAKE_SOURCE_DIR}/dbExamples/cbm_sts/src
 )
 
 Set(SYSTEM_INCLUDE_DIRECTORIES
@@ -17,6 +21,7 @@ Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 
 Set(LINK_DIRECTORIES
   ${ROOT_LIBRARY_DIR}
+  ${FAIRROOT_LIBRARY_DIR}
   ${Boost_LIBRARY_DIRS}
 )
 
@@ -60,8 +65,8 @@ CbmStsDbQa.h
 CbmStsDbQaSUID.h
 CbmStsDbQaSensor.h
 CbmStsDbQaIv.h
-${CMAKE_SOURCE_DIR}/dbase/dbInterface/FairDbReader.h
-${CMAKE_SOURCE_DIR}/dbase/dbInterface/FairDbWriter.h
+${CMAKE_SOURCE_DIR}/dbInterface/FairDbReader.h
+${CMAKE_SOURCE_DIR}/dbInterface/FairDbWriter.h
 )
 
 

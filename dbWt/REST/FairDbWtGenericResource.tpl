@@ -22,10 +22,10 @@ FairDbWtGenericResource<T>::FairDbWtGenericResource(Wt::WServer& server, Wt::WOb
 }
 
 template<typename T>
-void FairDbWtGenericResource<T>::GetById(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData)
+void FairDbWtGenericResource<T>::GetById(const Wt::Http::Request& request, jsoncons::json requestData, Wt::Http::Response& response, jsoncons::json &responseData)
 {
-  Int_t id = requestData.get("Id", -1).asInt();
-  UInt_t rid = requestData.get("Rid", (UInt_t)ValTimeStamp()).asUInt();
+  Int_t id = requestData.get_with_default("Id", -1);
+  UInt_t rid = requestData.get_with_default("Rid", (UInt_t)ValTimeStamp());
   std::unique_ptr<T> instance = T::GetById(id, rid);
 
   if (instance)
@@ -37,14 +37,14 @@ void FairDbWtGenericResource<T>::GetById(const Wt::Http::Request& request, Json:
 }
 
 template<typename T>
-void FairDbWtGenericResource<T>::GetAllVersions(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData)
+void FairDbWtGenericResource<T>::GetAllVersions(const Wt::Http::Request& request, jsoncons::json requestData, Wt::Http::Response& response, jsoncons::json &responseData)
 {
-  Int_t id = requestData.get("Id", -1).asInt();
+  Int_t id = requestData.get_with_default("Id", -1);
   std::unique_ptr<T> instance = T::GetById(id, ValTimeStamp());
   if (instance)
   {
     std::vector<T> array = instance->GetAllVersions();
-    Json::Value jsonArray = T::ToJsonArray(array);
+    jsoncons::json jsonArray = T::ToJsonArray(array);
     responseData["data"] = jsonArray;
   } else {
     responseData["error"] = "Not found";
@@ -52,43 +52,30 @@ void FairDbWtGenericResource<T>::GetAllVersions(const Wt::Http::Request& request
 }
 
 template<typename T>
-void FairDbWtGenericResource<T>::GetArray(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData)
+void FairDbWtGenericResource<T>::GetArray(const Wt::Http::Request& request, jsoncons::json requestData, Wt::Http::Response& response, jsoncons::json &responseData)
 {
-  UInt_t rid = requestData.get("Rid", (UInt_t)ValTimeStamp()).asUInt();
-  Json::Value jsonIdsArray = requestData.get("Ids", Json::Value(Json::arrayValue));
-  Int_t idsCount = jsonIdsArray.size();
-
-  if (!idsCount)
-  {
-    responseData["data"] = Json::Value(Json::arrayValue);
-    return;
-  }
-
-  std::vector<Int_t> ids(idsCount);
-  for (Int_t i = 0; i < idsCount; i++)
-  {
-    ids[i] = jsonIdsArray.get(i, -1).asInt();
-  }
+  UInt_t rid = requestData.get_with_default("Rid", (UInt_t)ValTimeStamp());
+  std::vector<Int_t> ids = requestData.get("Ids").as< std::vector<Int_t> >();
 
   std::vector<T> array = T::GetByIds(ids, rid);
-  Json::Value jsonArray = T::ToJsonArray(array);
+  jsoncons::json jsonArray = T::ToJsonArray(array);
   responseData["data"] = jsonArray;
 }
 
 template<typename T>
-void FairDbWtGenericResource<T>::GetAll(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData)
+void FairDbWtGenericResource<T>::GetAll(const Wt::Http::Request& request, jsoncons::json requestData, Wt::Http::Response& response, jsoncons::json &responseData)
 {
-  UInt_t rid = requestData.get("Rid", (UInt_t)ValTimeStamp()).asUInt();
+  UInt_t rid = requestData.get_with_default("Rid", (UInt_t)ValTimeStamp());
   std::vector<T> array = T::GetAll(rid);
-  Json::Value jsonArray = T::ToJsonArray(array);
+  jsoncons::json jsonArray = T::ToJsonArray(array);
   responseData["data"] = jsonArray;
 }
 
 template<typename T>
-void FairDbWtGenericResource<T>::Store(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData)
+void FairDbWtGenericResource<T>::Store(const Wt::Http::Request& request, jsoncons::json requestData, Wt::Http::Response& response, jsoncons::json &responseData)
 {
-  UInt_t rid = requestData.get("Rid", (UInt_t)ValTimeStamp()).asUInt();
-  Json::Value object = requestData.get("Object", Json::Value(Json::nullValue));
+  UInt_t rid = requestData.get_with_default("Rid", (UInt_t)ValTimeStamp());
+  jsoncons::json object = requestData.get_with_default("Object", jsoncons::json::null());
   std::unique_ptr<T> instance = T::FromJson(object);
   if (instance)
   {
@@ -97,16 +84,17 @@ void FairDbWtGenericResource<T>::Store(const Wt::Http::Request& request, Json::V
     instance->SetLogTitle(logTitle);
     instance->store(rid);
     T::PurgeCache();
+    responseData["data"]["Id"] = instance->GetId();
   } else {
     responseData["error"] = "Object: wrong type, must be json object";
   }
 }
 
 template<typename T>
-void FairDbWtGenericResource<T>::StoreArray(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData)
+void FairDbWtGenericResource<T>::StoreArray(const Wt::Http::Request& request, jsoncons::json requestData, Wt::Http::Response& response, jsoncons::json &responseData)
 {
-  UInt_t rid = requestData.get("Rid", (UInt_t)ValTimeStamp()).asUInt();
-  Json::Value jsonArray = requestData.get("Array", Json::Value(Json::nullValue));
+  UInt_t rid = requestData.get_with_default("Rid", (UInt_t)ValTimeStamp());
+  jsoncons::json jsonArray = requestData.get_with_default("Array", jsoncons::json::null());
 
   std::vector<T> array = T::FromJsonArray(jsonArray);
   if (array.size())

@@ -13,7 +13,7 @@
 #include "ValTimeStamp.h"               // for ValTimeStamp
 #include "FairDbStreamer.h"
 
-#include "Riosfwd.h"                    // for ostream
+#include <iosfwd>                    // for ostream
 #include "TString.h"                    // for TString
 
 #include <iostream>                     // for ostringstream, etc

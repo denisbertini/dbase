@@ -6,7 +6,7 @@
 #include "FairDbExPar2.h"              
 #include "FairDbExPar3.h"            
 
-#include "Riosfwd.h"                   
+#include <iosfwd>                   
 #include "TList.h"                     
 #include "TString.h"                   
 

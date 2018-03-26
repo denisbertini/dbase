@@ -12,20 +12,16 @@
 #include <WResource>
 #include <Wt/Http/Request>
 #include <Wt/Http/Response>
+#include "FairDbWtBaseResource.h"
 
-#include "json/json.h"
+#include <jsoncons/json.hpp>
 
-class FairDbWtAuthResource: public Wt::WResource
+class FairDbWtAuthResource: public FairDbWtBaseResource
 {
   public:
     FairDbWtAuthResource(Wt::WServer& server, Wt::WObject *parent = 0);
 
-    ~FairDbWtAuthResource();
-
-    void handleRequest(const Wt::Http::Request& request,
-                             Wt::Http::Response& response);
-
-    void Login(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData);
+    void Login(const Wt::Http::Request& request, jsoncons::json requestData, Wt::Http::Response& response, jsoncons::json &responseData);
 };
 
 #endif /* !FAIRDBWTAUTHRESOURCE_H */

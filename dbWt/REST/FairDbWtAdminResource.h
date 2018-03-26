@@ -15,20 +15,20 @@
 #include <Wt/Http/Response>
 #include "FairDbUser.h"
 
-#include "json/json.h"
+#include <jsoncons/json.hpp>
 
-// void EndpointCallback(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData);
+// void EndpointCallback(const Wt::Http::Request& request, jsoncons::json requestData, Wt::Http::Response& response, jsoncons::json &responseData);
 
 class FairDbWtAdminResource: public FairDbWtBaseResource
 {
   public:
     FairDbWtAdminResource(Wt::WServer& server, Wt::WObject *parent = 0);
 
-    void GetUser(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData);
-    void GetAllUsers(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData);
-    void ChangeUserPassword(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData);
-    void ChangeUser(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData);
-    void RegisterUser(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData);
+    void GetUser(const Wt::Http::Request& request, jsoncons::json requestData, Wt::Http::Response& response, jsoncons::json &responseData);
+    void GetAllUsers(const Wt::Http::Request& request, jsoncons::json requestData, Wt::Http::Response& response, jsoncons::json &responseData);
+    void ChangeUserPassword(const Wt::Http::Request& request, jsoncons::json requestData, Wt::Http::Response& response, jsoncons::json &responseData);
+    void ChangeUser(const Wt::Http::Request& request, jsoncons::json requestData, Wt::Http::Response& response, jsoncons::json &responseData);
+    void RegisterUser(const Wt::Http::Request& request, jsoncons::json requestData, Wt::Http::Response& response, jsoncons::json &responseData);
 };
 
 #endif /* !FAIRDBWTADMINRESOURCE_H */

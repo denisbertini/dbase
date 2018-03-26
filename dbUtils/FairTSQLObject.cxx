@@ -13,7 +13,7 @@
 
 #include "FairTSQLObject.h"
 
-#include "Riosfwd.h"                    // for ostream
+#include <iosfwd>                    // for ostream
 #include "TClass.h"                     // for TClass
 #include "TDataMember.h"                // for TDataMember
 #include "TDictionary.h"                // for TDictionary

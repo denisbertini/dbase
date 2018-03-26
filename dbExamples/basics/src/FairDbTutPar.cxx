@@ -20,7 +20,7 @@
 #include "FairDbOutTableBuffer.h"         // for FairDbOutRowStream
 #include "FairDbStatement.h"            // for FairDbStatement
 #include "FairParamList.h"              // for FairParamList
-#include "Riosfwd.h"                    // for ostream
+#include <iosfwd>                    // for ostream
 #include "TString.h"                    // for TString
 #include <stdlib.h>                     // for exit
 #include <memory>                       // for auto_ptr, etc

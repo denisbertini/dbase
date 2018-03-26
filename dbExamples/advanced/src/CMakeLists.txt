@@ -1,17 +1,21 @@
-# Create a library called "Advanced" 
+# Create a library called "Advanced"
 
 set(INCLUDE_DIRECTORIES
-${BASE_INCLUDE_DIRECTORIES}
-${Boost_INCLUDE_DIR}
-${CMAKE_SOURCE_DIR}/dbase/dbExamples/advanced/src  
+  ${CMAKE_SOURCE_DIR}
+  ${FAIRROOT_INCLUDE_DIR}
+  ${ROOT_INCLUDE_DIR}
+  ${BASE_INCLUDE_DIRECTORIES}
+
+  ${CMAKE_SOURCE_DIR}/dbExamples/advanced/src
 )
 
 include_directories( ${INCLUDE_DIRECTORIES})
 
 set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
   ${Boost_LIBRARY_DIRS}
-) 
+  ${ROOT_LIBRARY_DIR}
+  ${FAIRROOT_LIBRARY_DIR}
+)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 
@@ -28,12 +32,12 @@ FairDbTests.cxx
 set(HEADERS
 FairDbExPar1.h
 FairDbExPar2.h
-FairDbExPar3.h  
+FairDbExPar3.h
 FairDbExContFact.h
 FairDbTests.h
-${CMAKE_SOURCE_DIR}/dbase/dbInterface/FairDbReader.h
-${CMAKE_SOURCE_DIR}/dbase/dbInterface/FairDbWriter.h
-${CMAKE_SOURCE_DIR}/dbase/dbInterface/FairDbGenericParSet.h
+${CMAKE_SOURCE_DIR}/dbInterface/FairDbReader.h
+${CMAKE_SOURCE_DIR}/dbInterface/FairDbWriter.h
+${CMAKE_SOURCE_DIR}/dbInterface/FairDbGenericParSet.h
 )
 
 
@@ -44,6 +48,3 @@ set(DEPENDENCIES
 )
 
 GENERATE_LIBRARY()
-
-
-

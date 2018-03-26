@@ -22,10 +22,10 @@ FairDbWtUserResource::FairDbWtUserResource(Wt::WServer& server, Wt::WObject *par
   AddEndpoint("/User/GetAll", FairDbUserRole::kAdmin, boost::bind(&FairDbWtUserResource::GetAll, this, _1, _2, _3, _4));
 }
 
-void FairDbWtUserResource::Login(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData)
+void FairDbWtUserResource::Login(const Wt::Http::Request& request, jsoncons::json requestData, Wt::Http::Response& response, jsoncons::json &responseData)
 {
-  std::string email = requestData.get("email", "").asString();
-  std::string password = requestData.get("password", "").asString();
+  std::string email = requestData.get_with_default("email", std::string());
+  std::string password = requestData.get_with_default("password", std::string());
 
   std::unique_ptr<FairDbUser> user = FairDbWtUserSessionStore::Instance()->Login(email, password);
 
@@ -38,17 +38,17 @@ void FairDbWtUserResource::Login(const Wt::Http::Request& request, Json::Value r
   }
 }
 
-void FairDbWtUserResource::Register(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData)
+void FairDbWtUserResource::Register(const Wt::Http::Request& request, jsoncons::json requestData, Wt::Http::Response& response, jsoncons::json &responseData)
 {
-  Json::Value userJson = requestData.get("user", Json::nullValue);
-  if (userJson == Json::nullValue)
+  jsoncons::json userJson = requestData.get_with_default("user", jsoncons::json::null());
+  if (userJson.is_null())
   {
     responseData["error"] = "User not specified";
     response.setStatus(400);
     return;
   }
 
-  std::string password = requestData.get("password", std::string()).asString();
+  std::string password = requestData.get_with_default("password", std::string());
   if (password.empty())
   {
     responseData["error"] = "Password is empty or not specified";
@@ -72,10 +72,10 @@ void FairDbWtUserResource::Register(const Wt::Http::Request& request, Json::Valu
   Login(request, requestData, response, responseData);
 }
 
-void FairDbWtUserResource::GetById(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData)
+void FairDbWtUserResource::GetById(const Wt::Http::Request& request, jsoncons::json requestData, Wt::Http::Response& response, jsoncons::json &responseData)
 {
-  Int_t id = requestData.get("Id", -1).asInt();
-  UInt_t rid = requestData.get("Rid", (UInt_t)ValTimeStamp()).asUInt();
+  Int_t id = requestData.get_with_default("Id", -1);
+  UInt_t rid = requestData.get_with_default("Rid", (UInt_t)ValTimeStamp());
   std::unique_ptr<FairDbUser> user = FairDbUser::GetById(id, rid);
 
   if (user)
@@ -86,7 +86,7 @@ void FairDbWtUserResource::GetById(const Wt::Http::Request& request, Json::Value
   }
 }
 
-void FairDbWtUserResource::Get(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData)
+void FairDbWtUserResource::Get(const Wt::Http::Request& request, jsoncons::json requestData, Wt::Http::Response& response, jsoncons::json &responseData)
 {
   std::string authToken = request.headerValue("auth-token");
   std::unique_ptr<FairDbUser> user = FairDbWtUserSessionStore::Instance()->GetUser(authToken);
@@ -99,10 +99,10 @@ void FairDbWtUserResource::Get(const Wt::Http::Request& request, Json::Value req
   }
 }
 
-void FairDbWtUserResource::GetAll(const Wt::Http::Request& request, Json::Value requestData, Wt::Http::Response& response, Json::Value &responseData)
+void FairDbWtUserResource::GetAll(const Wt::Http::Request& request, jsoncons::json requestData, Wt::Http::Response& response, jsoncons::json &responseData)
 {
-  UInt_t rid = requestData.get("Rid", (UInt_t)ValTimeStamp()).asUInt();
+  UInt_t rid = requestData.get_with_default("Rid", (UInt_t)ValTimeStamp());
   std::vector<FairDbUser> array = FairDbUser::GetAll(rid);
-  Json::Value jsonArray = FairDbUser::ToJsonArray(array);
+  jsoncons::json jsonArray = FairDbUser::ToJsonArray(array);
   responseData["data"] = jsonArray;
 }

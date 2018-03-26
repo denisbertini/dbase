@@ -16,7 +16,7 @@
 #include "FairDbValRecord.h"          // for FairDbValRecord
 #include "ValTimeStamp.h"               // for ValTimeStamp
 
-#include "Riosfwd.h"                    // for ostream
+#include <iosfwd>                    // for ostream
 #include "Rtypes.h"                     // for UInt_t, Bool_t, Int_t, etc
 #include "TString.h"                    // for TString
 

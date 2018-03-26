@@ -10,7 +10,7 @@
 #include "FairDbString.h"               // for StringTok
 #include "FairDbTableMetaData.h"        // for string, FairDbTableMetaData
 
-#include "Riosfwd.h"                    // for ostream
+#include <iosfwd>                    // for ostream
 #include "TSQLServer.h"                 // for TSQLServer
 #include "TSQLStatement.h"              // for TSQLStatement
 #include "TString.h"                    // for TString, operator<<, etc

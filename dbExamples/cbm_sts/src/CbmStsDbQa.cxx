@@ -8,7 +8,7 @@
 #include "FairParamList.h"                // for FairParamList
 #include "FairDbParFactory.h"
 
-#include "Riosfwd.h"                     // for ostream
+#include <iosfwd>                     // for ostream
 #include "TString.h"                     // for TString
 
 #include <stdlib.h>                      // for exit
