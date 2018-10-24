@@ -218,8 +218,8 @@ FairDB is a rewrite/re-design of the original database interface code from Nick 
 collaboration at Fermilab.
 
 New extensions have been implemented (Denis Bertini, Evgeny Lavrik):
-                             * Generic template based data classes using CRTP design allowing automatic generation of C++ code
-                             * IO interface library to FairROOT RuntimeDB interface
-                             * Wt interface library allowing data scraping/visualization from DB to any WebBrowser
+* Generic template based data classes using CRTP design allowing automatic generation of C++ code
+* IO interface library to FairROOT RuntimeDB interface
+* Wt interface library allowing data scraping/visualization from DB to any WebBrowser
                                using HTTP protocol
-                             * ZeroMQ based multiple client access for scalability
+* ZeroMQ based multiple client access for scalability
